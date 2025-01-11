@@ -12,9 +12,9 @@ app.use(cors());
 app.use(express.json());
 require("dotenv").config();
 
-const DB = process.env.DB;
+const DB = process.env.DB; //if you want to pass mongo link in .env then you can pass.
 
-mongoose.connect(DB, {
+mongoose.connect("mongodb+srv://rajsingh:DYLq2HlWCEScya89@cluster0.oug8w.mongodb.net/threads", {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,
   })

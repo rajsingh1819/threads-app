@@ -9,30 +9,32 @@ const registerUser = async (req, res) => {
   try {
     const { username, emailorphone, password } = req.body;
 
-    // Determine if the input is a phone number or email
-    const isPhone = /^\d{10}$/.test(emailorphone); // Regex for a 10-digit phone number
+    // Validate if input is a phone number or email
+    const isPhone = /^\d{10}$/.test(emailorphone); // Regex for 10-digit phone number
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailorphone); // Regex for valid email
 
     if (!isPhone && !isEmail) {
       return res.status(400).json({
-        success:false,
+        success: false,
         message:
           "Invalid input. Please provide a valid 10-digit phone number or email address.",
       });
     }
 
-    // Check if the phone number or email already exists
+    // Check if email or phone number already exists
     const existingUser = await User.findOne({ emailorphone });
-
     if (existingUser) {
       return res.status(400).json({
-        success:false,
+        success: false,
         message: isPhone
           ? "Phone number already registered"
           : "Email already registered",
       });
     }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a new user
     const newUser = new User({
       username,
@@ -40,36 +42,51 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Generate and store the verification token
-    newUser.verificationToken = crypto.randomBytes(20).toString("hex");
+    // Check if email verification is possible
+    if (isEmail && process.env.USER && process.env.PASS) {
+      newUser.verificationToken = crypto.randomBytes(20).toString("hex");
+      await newUser.save();
 
-    // Save the user to the database
-    await newUser.save();
-
-    // Send verification email only if it's an email
-    if (isEmail) {
-      sendVerificationEmail(newUser.emailorphone, newUser.verificationToken);
+      // Send verification email
+      try {
+        await sendVerificationEmail(
+          newUser.emailorphone,
+          newUser.verificationToken
+        );
+        return res.status(200).json({
+          success: true,
+          message: "Email registered successfully. Please verify your email.",
+        });
+      } catch (emailError) {
+        console.error("Error sending verification email:", emailError);
+        return res.status(500).json({
+          success: false,
+          message: "User registered, but email verification could not be sent.",
+        });
+      }
     }
 
+    // Save user without email verification
+    await newUser.save();
     res.status(200).json({
-      success:true,
+      success: true,
       message: isPhone
         ? "Phone number registered successfully"
-        : "Email registered successfully. Please verify your email.",
+        : "Email registered successfully. Email verification skipped.",
     });
   } catch (error) {
     console.error("Error registering user:", error);
-    res.status(500).json({ message: "Error registering user" });
+    res.status(500).json({ success: false, message: "Error registering user" });
   }
 };
 
-// for email verification
+// Send verification email function
 const sendVerificationEmail = async (email, verificationToken) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "nodejs.test19@gmail.com",
-      pass: "goyn areo tzrj dhah",
+      user: process.env.USER,
+      pass: process.env.PASS,
     },
     tls: {
       rejectUnauthorized: false,
@@ -77,10 +94,18 @@ const sendVerificationEmail = async (email, verificationToken) => {
   });
 
   const mailOptions = {
-    from: "threads.com",
+    from: process.env.USER, // Use configured email
     to: email,
-    subject: "Email Verification",
-    text: `Please verify your email: http://localhost:3000/api/auth/user/verify/${verificationToken}`,
+    subject: "Email Verification - Threads",
+    text: `Hi there,
+    
+Thank you for registering on Threads. Please verify your email address by clicking on the link below:
+http://localhost:3000/api/auth/user/verify/${verificationToken}
+
+If you did not request this, please ignore this email.
+
+Best regards,
+The Threads Team`,
   };
 
   try {
@@ -91,36 +116,39 @@ const sendVerificationEmail = async (email, verificationToken) => {
   }
 };
 
-//verify emailtoken
+// Verify user token function
 const verifyUserToken = async (req, res) => {
   try {
     const { token } = req.params;
 
     const user = await User.findOne({ verificationToken: token });
     if (!user) {
-      return res.status(404).json({ success:false,message: "Invalid token" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid or expired token" });
     }
 
+    // Mark the user as verified and clear the token
     user.verified = true;
-    user.verificationToken = undefined; // Clear the token after verification
+    user.verificationToken = undefined;
     await user.save();
 
-    res.status(200).json({ success:true, message: "Email verified successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
   } catch (error) {
     console.error("Error verifying email:", error);
-    res.status(500).json({ success:false, message: "Email verification failed" });
+    res
+      .status(500)
+      .json({ success: false, message: "Email verification failed" });
   }
 };
 
-
-
-
- // login
+// login
 
 const secretKey =
   process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex");
 
- 
 const loginUser = async (req, res) => {
   try {
     const { emailorphone, password } = req.body;
@@ -140,10 +168,9 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ emailorphone });
     if (!user) {
       return res.status(404).json({
-        success:false,
+        success: false,
         // message: "Invalid email or phone number",
         message: "User not registered? Please registered first.",
-
       });
     }
 
@@ -151,7 +178,7 @@ const loginUser = async (req, res) => {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(400).json({
-        success:false,
+        success: false,
         message: "Invalid password",
       });
     }
@@ -179,14 +206,13 @@ const loginUser = async (req, res) => {
         emailorphone: user.emailorphone,
       },
     });
-    
   } catch (error) {
     console.error("Error logging in:", error);
-    res.status(500).json({ success:false, message: "Login failed" });
+    res.status(500).json({ success: false, message: "Login failed" });
   }
 };
 
-// /users/:userId"
+
 const getUsers = async (req, res) => {
   const { userId } = req.params;
   try {
