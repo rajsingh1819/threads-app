@@ -29,7 +29,7 @@ const PostList = ({ item }) => {
       {/* User Info */}
       <View className="flex-row pb-1 mb-2 gap-2">
         <Image
-          source={{ uri: imagePath?.user }}
+          source={{ uri:  item?.avatar || imagePath?.user }}
           className="h-10 w-10 rounded-full"
           resizeMode="contain"
         />

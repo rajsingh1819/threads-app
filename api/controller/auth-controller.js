@@ -7,7 +7,7 @@ require("dotenv").config();
 
 const registerUser = async (req, res) => {
   try {
-    const { username, emailorphone, password } = req.body;
+    const { username, emailorphone, password, avatar } = req.body;
 
     // Validate if input is a phone number or email
     const isPhone = /^\d{10}$/.test(emailorphone); // Regex for 10-digit phone number
@@ -40,6 +40,7 @@ const registerUser = async (req, res) => {
       username,
       emailorphone,
       password: hashedPassword,
+      avatar: avatar || "", // Default to empty string if avatar is not provided
     });
 
     // Check if email verification is possible
@@ -51,7 +52,8 @@ const registerUser = async (req, res) => {
       try {
         await sendVerificationEmail(
           newUser.emailorphone,
-          newUser.verificationToken
+          newUser.verificationToken,
+          username
         );
         return res.status(200).json({
           success: true,
@@ -81,7 +83,7 @@ const registerUser = async (req, res) => {
 };
 
 // Send verification email function
-const sendVerificationEmail = async (email, verificationToken) => {
+const sendVerificationEmail = async (email, verificationToken, username) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -97,7 +99,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     from: process.env.USER, // Use configured email
     to: email,
     subject: "Email Verification - Threads",
-    text: `Hi there,
+    text: `Hi ${username || "there"},
     
 Thank you for registering on Threads. Please verify your email address by clicking on the link below:
 http://localhost:3000/api/auth/user/verify/${verificationToken}

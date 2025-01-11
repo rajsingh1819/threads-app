@@ -32,26 +32,102 @@ const createPost = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
   const { postId } = req.params;
+
   try {
-    const post = await Post.findOne({ _id: postId }).populate("user", "username");
+    // Fetch the post and populate user info for the post, comments, and replies
+    const post = await Post.findById(postId)
+      .populate("user", "username avatar") // Populate user for the post
+      .populate("comments.user", "username avatar") // Populate user for each comment
+      .populate("comments.replies.user", "username avatar"); // Populate user for each reply inside comments
+
     if (!post) {
       return res.status(404).json({
         success: false,
         message: "Post not found",
       });
     }
+
     res.status(200).json({
       success: true,
       message: "Fetched the post successfully!",
       post,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
       message: "An error occurred while fetching the post",
     });
   }
 };
+
+
+
+
+
+// Create a new comment or reply to an existing comment
+const createCommentOrReply = async (req, res) => {
+  const { postId } = req.params;
+  const { userId, content, commentId } = req.body;  // commentId is optional
+
+  try {
+    const post = await Post.findById(postId);  // Find the post by its ID
+    if (!post) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+
+    if (commentId) {
+      // If a commentId is provided, it means the user is replying to an existing comment
+      const comment = post.comments.id(commentId);  // Find the specific comment by its _id
+      if (!comment) {
+        return res.status(404).json({ success: false, message: "Comment not found" });
+      }
+
+      // Create the reply (nested under the specific comment)
+      const newReply = {
+        user: userId,
+        content,
+      };
+
+      // Push the new reply to the comment's replies array
+      comment.replies.push(newReply);
+
+      await post.save();  // Save the updated post with the new reply
+
+      res.status(201).json({
+        success: true,
+        message: "Reply added successfully!",
+        reply: newReply,  // Return the newly added reply
+      });
+    } else {
+      // If no commentId is provided, this means the user is creating a new comment
+      const newComment = {
+        user: userId,
+        content,
+      };
+
+      // Add the new comment to the post's comments array
+      post.comments.push(newComment);
+
+      await post.save();  // Save the updated post with the new comment
+
+      res.status(201).json({
+        success: true,
+        message: "Comment added successfully!",
+        comment: newComment,  // Return the newly added comment
+      });
+    }
+  } catch (error) {
+    console.error("Error creating comment/reply:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding the comment/reply",
+    });
+  }
+};
+
+
+
 
 
 
@@ -68,20 +144,7 @@ const getPosts = async (req, res) => {
   }
 };
 
-// const getPosts = async (req, res) => {
-//   try {
-//     const posts = await Post.find()
-//       .populate("user", "name")
-//       .sort({ createdAt: -1 });
-//     // .populate("user", "name profilePicture")
 
-//     res.status(200).json(posts);
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "An error occurred while getting the posts" });
-//   }
-// };
 
 //endpoint for liking a particular post
 
@@ -142,4 +205,4 @@ const unlikePost = async (req, res) => {
   }
 };
 
-module.exports = { createPost, getPosts, likePost, unlikePost,getSinglePost };
+module.exports = { createPost, getPosts, likePost, unlikePost,getSinglePost ,createCommentOrReply};

@@ -24,7 +24,7 @@ const PostLayout = () => {
       <Stack.Screen
         name="[id]"
         options={{
-          headerTitle: "Comments",
+          headerTitle: "Thread",
           headerShown: true,
           presentation: "modal",
           headerLeft: () => (

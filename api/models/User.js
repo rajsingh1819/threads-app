@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   },
   emailorphone: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profilePicture: { type: String },
+  avatar: { type: String },
   joinDate: { type: Date, default: Date.now },
   sentFollowRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   receivedFollowRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
