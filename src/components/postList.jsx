@@ -2,42 +2,37 @@ import { Image, View, Text, Pressable, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { Heart, MessageCircle, Repeat, Send } from "lucide-react-native";
 import imagePath from "../constant/imagePath";
-import { router } from "expo-router";
-import { showToast } from "../constant/showToast";
+import { formatDistance, subDays, formatDistanceToNow } from "date-fns";
 
 const IconButton = ({ onPress, Icon, label }) => (
-  <Pressable onPress={onPress} accessibilityLabel={label} >
+  <Pressable onPress={onPress} accessibilityLabel={label}>
     <Icon size={25} color="#6b7280" />
   </Pressable>
 );
 
-const PostList = ({ item }) => {
+const PostList = ({ item, handleMediaUpload }) => {
   const [showMore, setShowMore] = useState(false);
 
-  const handleMediaUpload = (type) => {
-    switch (type) {
-      case "message":
-        router.push(`/post/${item._id}`);
-        break;
-      default:
-        showToast("error", "Something went wrong!");
-    }
-  };
-
   return (
-    <View className="mb-3  p-2 border-b border-slate-400 ">
+    <View className="p-2 border-b-2 border-slate-400 ">
       {/* User Info */}
       <View className="flex-row pb-1 mb-2 gap-2">
         <Image
-          source={{ uri:  item?.avatar || imagePath?.user }}
+          source={{ uri: item?.avatar || imagePath?.user }}
           className="h-10 w-10 rounded-full"
           resizeMode="contain"
         />
-
         <View className="flex-1 justify-center gap-3 ">
-          <Text className="text-lg font-bold text-gray-800">
-            {item?.user?.username || "Unknown"}
-          </Text>
+          <View className="flex-row gap-3 items-center justify-between">
+            <Text className="text-lg font-bold text-gray-800">
+              {item?.user?.username || "Unknown"}
+            </Text>
+            <Text className="text-slate-800">
+              {formatDistanceToNow(new Date(item?.createdAt), {
+                addSuffix: true,
+              })}
+            </Text>
+          </View>
           {/* Post Content */}
           <Text className="text-gray-800">
             {showMore ? item?.content : item?.content?.slice(0, 100)}
@@ -49,34 +44,37 @@ const PostList = ({ item }) => {
               </TouchableOpacity>
             )}
           </Text>
-
           {/* Action Buttons */}
-          <View className="flex-row gap-10">
+          {
+            handleMediaUpload && <View className="flex-row gap-10">
             <IconButton
-              onPress={() => handleMediaUpload("heart")}
+              onPress={() => handleMediaUpload("heart", item)}
               Icon={Heart}
               label="Like"
             />
             <IconButton
-              onPress={() => handleMediaUpload("message")}
+              onPress={() => handleMediaUpload("message", item)}
               Icon={MessageCircle}
               label="Comment"
             />
             <IconButton
-              onPress={() => handleMediaUpload("repeat")}
+              onPress={() => handleMediaUpload("repeat", item)}
               Icon={Repeat}
               label="Share"
             />
             <IconButton
-              onPress={() => handleMediaUpload("send")}
+              onPress={() => handleMediaUpload("send", item)}
               Icon={Send}
               label="Send"
             />
           </View>
+          }
+         
         </View>
       </View>
     </View>
   );
 };
+
 
 export default PostList;

@@ -5,6 +5,7 @@ import HomeHeader from "../../../components/homeHeader";
 import { useEffect, useState, useCallback } from "react";
 import { getAllPost } from "../../../provider/userAllApi";
 import { showToast } from "../../../constant/showToast";
+import { router } from "expo-router";
 
 const Home = () => {
   const [postData, setPostData] = useState([]); // Posts displayed on the screen
@@ -25,29 +26,44 @@ const Home = () => {
 
 
  
-  // Fetch posts on initial render
+  const handleMediaUpload = (type, item) => {
+    switch (type) {
+      case "message":
+        router.push(`/post/${item._id}`);
+        break;
+      case "heart":
+        showToast("success", "Liked!");
+        break;
+      case "repeat":
+        showToast("success", "Post shared!");
+        break;
+      case "send":
+        showToast("success", "Post sent!");
+        break;
+      default:
+        showToast("error", "Something went wrong!");
+    }
+  };
+
   useEffect(() => {
     fectchPost();
   }, []);
 
-
-
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 p-1">
-        <HomeHeader  />
+        <HomeHeader />
         <FlatList
           data={postData}
           keyExtractor={(item) => item.id || item._id}
-          renderItem={({ item }) => <PostList item={item} />}
+          renderItem={({ item }) => (
+            <PostList item={item} handleMediaUpload={handleMediaUpload} />
+          )}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 10 }} 
-        
-          
+          contentContainerStyle={{ paddingTop: 10 }}
         />
       </View>
-    </SafeAreaView>
-  );
+    </SafeAreaView>  );
 };
 
 export default Home;

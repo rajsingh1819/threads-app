@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 import store from "../provider/store/store";
 import Toast from "react-native-toast-message";
 import { router, Stack } from "expo-router";
-import _middleware from "./_middleware"; // Import the middleware
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,16 +29,12 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <_middleware />
-       {/* Add middleware to the layout */}
-      <Stack initialRouteName="index"  >
+      <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="post" options={{ headerShown: false }} />
         <Stack.Screen name="setting" options={{ headerShown: false }} />
-
-
       </Stack>
       <Toast position="top" />
     </Provider>

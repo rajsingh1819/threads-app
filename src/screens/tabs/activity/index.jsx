@@ -14,17 +14,10 @@ export default () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    const checkAuthentication = async () => {
-      const token = await AsyncStorage.getItem("authToken");
-      if (token) {
+  
         dispatch(checkAuth()); // Only dispatch if token is found
-      }
-    };
-
-    if (isAuthenticated === null) {
-      checkAuthentication(); // Only call when the state is not set
-    }
-  }, [dispatch, isAuthenticated]); // Trigger once when the state is not determined yet
+    
+  }, [dispatch]); // Trigger once when the state is not determined yet
 
   
 

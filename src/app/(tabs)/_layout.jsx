@@ -3,28 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Home, Search, Plus, Heart, User } from "lucide-react-native";
 import { checkAuth } from "../../provider/auth";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
   // const dispatch = useDispatch();
   // const { isAuthenticated, isLoading: authLoading } = useSelector((state) => state.auth);
-
-  
-
-  // useEffect(() => {
-  //   // Check authentication when the component is mounted
-  //   const checkToken = async () => {
-  //    const data= await dispatch(checkAuth());
-    
-  //    console.log("!data?.payload?.token",!data?.payload?.token)
-     
-  //    if(!data?.payload?.token){
-  //     router.push("/(auth)")
-  //    }
-  //   };
-
-  //   checkToken();
-  // }, [dispatch]);
-
 
   return (
     <Tabs
