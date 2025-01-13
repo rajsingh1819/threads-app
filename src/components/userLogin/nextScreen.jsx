@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
 import React from "react";
 import ButtonComp from "../../constant/ButtonComp";
-import { ChevronLeft, AtSign } from "lucide-react-native";
+import { ChevronLeft, AtSign ,UserRound} from "lucide-react-native";
 import { showToast } from "../../constant/showToast";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../../provider/auth";
@@ -48,11 +48,17 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
       </TouchableOpacity>
 
       <View className="flex-1 gap-10">
-        <View className="items-center gap-2">
-          <Image
-            className="h-32 w-32 rounded-full bg-slate-500"
-            resizeMode="contain"
-          />
+        <View className="items-center gap-1">
+          {
+           !userData?.avatar ? < UserRound size={50}   
+           className="h-32 w-32 rounded-full bg-slate-500 border "
+            /> :<Image
+           className="h-32 w-32 rounded-full bg-slate-500 border "
+           resizeMode="contain"
+         />
+          }
+          
+          <Text></Text>
           <Text className="font-bold text-base">Upload Image</Text>
         </View>
 

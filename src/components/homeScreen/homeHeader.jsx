@@ -7,11 +7,11 @@ import {
   Mic,
   MapPin,
 } from "lucide-react-native";
-import imagePath from "../constant/imagePath";
+import imagePath from "../../constant/imagePath";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkAuth } from "../provider/auth";
+import { checkAuth } from "../../provider/auth";
 
 const HomeHeader = () => {
   const { user } = useSelector((state) => state.auth);

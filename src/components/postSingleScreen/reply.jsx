@@ -1,11 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import PostList from "../postList";
+import PostSingleList from "./singleList";
 
-const Reply = ({ reply, handleReply }) => {
+
+const Reply = ({ reply, handleReply,handleMediaUpload }) => {
   return (
-    <View key={reply._id} className="ml-4 mt-2">
-      <PostList  item={reply}/>
+    <View key={reply._id} className="ml-10 mt-2">
+
+    <PostSingleList item={reply} action="reply"/>
       {/* <Text className="font-semibold">@{reply.user?.username}</Text>
       <Text>{reply.content}</Text> */}
       {/* <TouchableOpacity onPress={() => handleReply(reply)}>

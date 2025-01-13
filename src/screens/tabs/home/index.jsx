@@ -1,17 +1,18 @@
-import { View, FlatList, RefreshControl } from "react-native";
+import { View, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import PostList from "../../../components/postList";
-import HomeHeader from "../../../components/homeHeader";
-import { useEffect, useState, useCallback } from "react";
+
+import HomeHeader from "../../../components/homeScreen/homeHeader";
+import { useEffect, useState } from "react";
 import { getAllPost } from "../../../provider/userAllApi";
 import { showToast } from "../../../constant/showToast";
-import { router } from "expo-router";
+import PostList from "../../../components/homeScreen/postList";
+import { useSelector } from "react-redux";
 
 const Home = () => {
-  const [postData, setPostData] = useState([]); // Posts displayed on the screen
- 
-  // Fetch posts from the backend
-  const fectchPost = async () => {
+  const [postData, setPostData] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+
+  const fetchPost = async () => {
     const result = await getAllPost();
     if (result.success) {
       const fetchedPosts = result.data.posts || [];
@@ -24,29 +25,8 @@ const Home = () => {
     }
   };
 
-
- 
-  const handleMediaUpload = (type, item) => {
-    switch (type) {
-      case "message":
-        router.push(`/post/${item._id}`);
-        break;
-      case "heart":
-        showToast("success", "Liked!");
-        break;
-      case "repeat":
-        showToast("success", "Post shared!");
-        break;
-      case "send":
-        showToast("success", "Post sent!");
-        break;
-      default:
-        showToast("error", "Something went wrong!");
-    }
-  };
-
   useEffect(() => {
-    fectchPost();
+    fetchPost();
   }, []);
 
   return (
@@ -57,13 +37,14 @@ const Home = () => {
           data={postData}
           keyExtractor={(item) => item.id || item._id}
           renderItem={({ item }) => (
-            <PostList item={item} handleMediaUpload={handleMediaUpload} />
+            <PostList item={item} action="post" user={user} />
           )}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 10 }}
         />
       </View>
-    </SafeAreaView>  );
+    </SafeAreaView>
+  );
 };
 
 export default Home;

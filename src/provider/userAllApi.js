@@ -126,10 +126,10 @@ export const createNewComment = async ({ postId, userId, content, commentId }) =
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId, content, commentId }),  // Include commentId if replying
+      body: JSON.stringify({ userId, content, commentId }),  // Include commentId is optional comment
     });
 
-    // Check if response is okay
+  
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Comment creation error:", errorData);
@@ -148,3 +148,70 @@ export const createNewComment = async ({ postId, userId, content, commentId }) =
     return { success: false, message: "An unexpected error occurred" };
   }
 };
+
+
+
+
+
+export const likeEntity = async (type, entityId, userId) => {
+  const api = `${url}/api/posts/${type}/${entityId}/like`; // Fixed the incorrect ':' in the URL
+
+  try {
+    const response = await fetch(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }), // Removed unnecessary `content` in the body
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Like entity error:", errorData);
+      return {
+        success: false,
+        message: errorData.message || "Failed to like entity",
+      };
+    }
+
+    const data = await response.json();
+    console.log("Entity liked successfully:", data);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Unexpected error liking entity:", error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+};
+
+
+
+export const unlikeEntity = async (type, entityId, userId) => {
+  const api = `${url}/api/posts/${type}/${entityId}/unlike`;
+
+  try {
+    const response = await fetch(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Unlike entity error:", errorData);
+      return {
+        success: false,
+        message: errorData.message || "Failed to unlike entity",
+      };
+    }
+
+    const data = await response.json();
+    console.log("Entity unliked successfully:", data);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Unexpected error unliking entity:", error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+};
+

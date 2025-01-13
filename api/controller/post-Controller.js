@@ -1,5 +1,7 @@
 const Post = require("../models/Post");
 
+
+
 const createPost = async (req, res) => {
   try {
     const { content, userId } = req.body;
@@ -36,10 +38,9 @@ const getSinglePost = async (req, res) => {
   try {
     // Fetch the post and populate user info for the post, comments, and replies
     const post = await Post.findById(postId)
-      .populate("user", "username avatar") // Populate user for the post
-      .populate("comments.user", "username avatar") // Populate user for each comment
-      .populate("comments.replies.user", "username avatar"); // Populate user for each reply inside comments
-
+      .populate("user", "username avatar") 
+      .populate("comments.user", "username avatar") 
+      .populate("comments.replies.user", "username avatar"); 
     if (!post) {
       return res.status(404).json({
         success: false,
@@ -148,61 +149,150 @@ const getPosts = async (req, res) => {
 
 //endpoint for liking a particular post
 
-const likePost = async (req, res) => {
-  const postId = req.params.postId;
-  const userId = req.params.userId; // Assuming you have a way to get the logged-in user's ID
+// const likePost = async (req, res) => {
+//   const postId = req.params.postId;
+//   const userId = req.params.userId; // Assuming you have a way to get the logged-in user's ID
+
+//   try {
+//     const post = await Post.findById(postId).populate("user", "name");
+
+//     const updatedPost = await Post.findByIdAndUpdate(
+//       postId,
+//       { $addToSet: { likes: userId } }, // Add user's ID to the likes array
+//       { new: true } // To return the updated post
+//     );
+
+//     if (!updatedPost) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+//     updatedPost.user = post.user;
+
+//     res.json(updatedPost);
+//   } catch (error) {
+//     console.error("Error liking post:", error);
+//     res
+//       .status(500)
+//       .json({ message: "An error occurred while liking the post" });
+//   }
+// };
+
+// //endpoint to unlike a post
+
+// const unlikePost = async (req, res) => {
+//   const postId = req.params.postId;
+//   const userId = req.params.userId;
+
+//   try {
+//     const post = await Post.findById(postId).populate("user", "name");
+
+//     const updatedPost = await Post.findByIdAndUpdate(
+//       postId,
+//       { $pull: { likes: userId } },
+//       { new: true }
+//     );
+
+//     updatedPost.user = post.user;
+
+//     if (!updatedPost) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     res.json(updatedPost);
+//   } catch (error) {
+//     console.error("Error unliking post:", error);
+//     res
+//       .status(500)
+//       .json({ message: "An error occurred while unliking the post" });
+//   }
+// };
+
+
+
+
+
+
+
+
+
+const likeEntity = async (req, res) => {
+  const { type, entityId } = req.params;
+  const { userId } = req.body;
 
   try {
-    const post = await Post.findById(postId).populate("user", "name");
+    let updateQuery;
 
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      { $addToSet: { likes: userId } }, // Add user's ID to the likes array
-      { new: true } // To return the updated post
-    );
+    switch (type) {
+      case "post":
+        updateQuery = { _id: entityId, "likes": { $ne: userId } };
+        await Post.updateOne(updateQuery, { $addToSet: { likes: userId } });
+        break;
 
-    if (!updatedPost) {
-      return res.status(404).json({ message: "Post not found" });
+      case "comment":
+        updateQuery = { "comments._id": entityId, "comments.likes": { $ne: userId } };
+        await Post.updateOne(updateQuery, { $addToSet: { "comments.$.likes": userId } });
+        break;
+
+      case "reply":
+        updateQuery = { "comments.replies._id": entityId, "comments.replies.likes": { $ne: userId } };
+        await Post.updateOne(updateQuery, {
+          $addToSet: { "comments.$[].replies.$[reply].likes": userId },
+        }, { arrayFilters: [{ "reply._id": entityId }] });
+        break;
+
+      default:
+        return res.status(400).json({ message: "Invalid type" });
     }
-    updatedPost.user = post.user;
 
-    res.json(updatedPost);
+    res.status(200).json({ message: "Liked successfully!" });
   } catch (error) {
-    console.error("Error liking post:", error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while liking the post" });
+    console.error("Error liking entity:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+ const   unlikeEntity=async (req, res) => {
+  const { type, entityId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    let updateQuery;
+
+    switch (type) {
+      case "post":
+        updateQuery = { _id: entityId };
+        await Post.updateOne(updateQuery, { $pull: { likes: userId } });
+        break;
+
+      case "comment":
+        updateQuery = { "comments._id": entityId };
+        await Post.updateOne(updateQuery, { $pull: { "comments.$.likes": userId } });
+        break;
+
+      case "reply":
+        updateQuery = { "comments.replies._id": entityId };
+        await Post.updateOne(updateQuery, {
+          $pull: { "comments.$[].replies.$[reply].likes": userId },
+        }, { arrayFilters: [{ "reply._id": entityId }] });
+        break;
+
+      default:
+        return res.status(400).json({ message: "Invalid type" });
+    }
+
+    res.status(200).json({ message: "Unliked successfully!" });
+  } catch (error) {
+    console.error("Error unliking entity:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-//endpoint to unlike a post
 
-const unlikePost = async (req, res) => {
-  const postId = req.params.postId;
-  const userId = req.params.userId;
 
-  try {
-    const post = await Post.findById(postId).populate("user", "name");
 
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      { $pull: { likes: userId } },
-      { new: true }
-    );
 
-    updatedPost.user = post.user;
-
-    if (!updatedPost) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    res.json(updatedPost);
-  } catch (error) {
-    console.error("Error unliking post:", error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while unliking the post" });
-  }
-};
-
-module.exports = { createPost, getPosts, likePost, unlikePost,getSinglePost ,createCommentOrReply};
+module.exports = { createPost, getPosts, 
+  // likePost, unlikePost
+  likeEntity ,
+  unlikeEntity
+  ,getSinglePost 
+  ,createCommentOrReply};
