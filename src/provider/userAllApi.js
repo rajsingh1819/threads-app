@@ -50,14 +50,13 @@ export const getSinglePost = async ({ postId }) => {
     }
 
     const data = await response.json();
-    console.log("Post data:", data);
+    // console.log("Post data:", data);
     return { success: true, data };
   } catch (error) {
     console.error("Unexpected error fetching post:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
-
 
 export const getAllPost = async () => {
   const api = `${url}/api/posts/gets`;
@@ -77,7 +76,7 @@ export const getAllPost = async () => {
     }
 
     const data = await response.json();
-    console.log("Post data:", data);
+    // console.log("Post data:", data);
     return { success: true, data };
   } catch (error) {
     console.error("Unexpected error featching posts:", error);
@@ -116,9 +115,14 @@ export const checkPrivate = async ({ userId, isPrivate }) => {
   }
 };
 
-export const createNewComment = async ({ postId, userId, content, commentId }) => {
+export const createNewComment = async ({
+  postId,
+  userId,
+  content,
+  commentId,
+}) => {
   // Updated API endpoint to include postId
-  const api = `${url}/api/posts/user/${postId}/comment`;  // Single endpoint
+  const api = `${url}/api/posts/user/${postId}/comment`; // Single endpoint
 
   try {
     const response = await fetch(api, {
@@ -126,10 +130,9 @@ export const createNewComment = async ({ postId, userId, content, commentId }) =
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId, content, commentId }),  // Include commentId is optional comment
+      body: JSON.stringify({ userId, content, commentId }), // Include commentId is optional comment
     });
 
-  
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Comment creation error:", errorData);
@@ -148,10 +151,6 @@ export const createNewComment = async ({ postId, userId, content, commentId }) =
     return { success: false, message: "An unexpected error occurred" };
   }
 };
-
-
-
-
 
 export const likeEntity = async (type, entityId, userId) => {
   const api = `${url}/api/posts/${type}/${entityId}/like`; // Fixed the incorrect ':' in the URL
@@ -183,8 +182,6 @@ export const likeEntity = async (type, entityId, userId) => {
   }
 };
 
-
-
 export const unlikeEntity = async (type, entityId, userId) => {
   const api = `${url}/api/posts/${type}/${entityId}/unlike`;
 
@@ -215,3 +212,53 @@ export const unlikeEntity = async (type, entityId, userId) => {
   }
 };
 
+export const singleUser = async (userId) => {
+  const api = `${url}/api/auth/profile/${userId}`;
+
+  try {
+    const response = await fetch(api, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+
+      return {
+        success: false,
+        message: errorData.message || "Failed to fetch user",
+      };
+    }
+
+    const data = await response.json();
+    // console.log(" user comming successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("Unexpected error unliking entity:", error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+};
+
+export const getUsersPosts = async (userId) => {
+  const api = `${url}/api/posts/all/user/${userId}`;
+
+  try {
+    const response = await fetch(api, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        success: false,
+        message: errorData.message || "Failed to fetch posts",
+      };
+    }
+
+    const data = await response.json(); 
+    // console.log("Fetched posts successfully!:", data);
+    return data; // Return the entire response object
+  } catch (error) {
+    console.error("Unexpected error fetching posts:", error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+};

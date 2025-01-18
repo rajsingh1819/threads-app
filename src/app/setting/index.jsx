@@ -7,14 +7,14 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPrivate } from "../../provider/userAllApi";
-import { checkAuth } from "../../provider/auth";
-import { showToast } from "../../constant/showToast";
+
+
 import { router, Stack } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import CheckPrivacyStatus from "../../components/userSettings/checkPrivacy";
 import UserLogout from "../../components/userSettings/userLogout";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { checkAuth } from "../../provider/auth";
 
 const Setting = () => {
   const dispatch = useDispatch();

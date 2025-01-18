@@ -32,7 +32,4 @@ router.get("/profile/:userId", userProfile);
 
 module.exports = router;
 
-/*
-POST /user/follow → POST /users/:userId/follow
-POST /profile/set-privacy → PATCH /users/:userId/privacy
-*/
+

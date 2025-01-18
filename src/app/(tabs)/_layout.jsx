@@ -1,16 +1,18 @@
 import { router, Tabs } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Home, Search, Plus, Heart, User } from "lucide-react-native";
-import { checkAuth } from "../../provider/auth";
+import { LogBox } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
   // const dispatch = useDispatch();
   // const { isAuthenticated, isLoading: authLoading } = useSelector((state) => state.auth);
-
+   LogBox.ignoreLogs(['Clerk: Clerk has been loaded with development keys']);
+ 
   return (
     <Tabs
+  
       screenOptions={{
         tabBarActiveTintColor: "#0a7ea4",
         headerShown: false,
@@ -21,7 +23,14 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarShowLabel: false,
+        
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push("/home"); 
+          },
         }}
       />
       <Tabs.Screen

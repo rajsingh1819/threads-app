@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createPost, getPosts,likeEntity, unlikeEntity,getSinglePost,createCommentOrReply} = require("../controller/post-Controller");
+const { createPost, getPosts,likeEntity,getUserPosts, unlikeEntity,getSinglePost,createCommentOrReply} = require("../controller/post-Controller");
 
 router.post("/create", createPost);
 router.get("/gets", getPosts); // Ensure this matches exactly
@@ -12,6 +12,8 @@ router.post("/user/:postId/comment",createCommentOrReply);
 
 router.post("/:type/:entityId/like", likeEntity);
 router.post("/:type/:entityId/unlike", unlikeEntity);
+router.get("/all/user/:userId", getUserPosts);
+
 
 
 

@@ -14,9 +14,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "../../provider/auth";
 
 const HomeHeader = () => {
+ 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
+  // console.log(user)
+  
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
@@ -27,7 +29,7 @@ const HomeHeader = () => {
       <View className="flex items-center mb-3">
         <Image
           source={{ uri: imagePath?.logo }}
-          className="h-16 w-16"
+          className="h-12 w-12"
           resizeMode="contain"
         />
       </View>
