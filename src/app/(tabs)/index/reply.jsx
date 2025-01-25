@@ -28,6 +28,7 @@ import HeaderBack from "../../../constant/HeaderBack";
 const Reply = () => {
   const { postId, user, item, action, replyTo } = useLocalSearchParams();
 
+
   const parsedUser = user ? JSON.parse(user) : null;
   const parsedItem = item ? JSON.parse(item) : null;
   const parsedReplyTo = replyTo ? JSON.parse(replyTo) : null;
@@ -86,7 +87,7 @@ const Reply = () => {
             <View className="flex-row mb-4">
               {/* User Avatar */}
               <Image
-                source={{ uri: imagePath?.user }}
+                source={{ uri: parsedUser?.avatar || imagePath?.user }}
                 className="h-10 w-10 rounded-full"
                 resizeMode="contain"
               />

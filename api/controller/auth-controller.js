@@ -3,25 +3,104 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+const { sendVerificationEmail } = require("../util/sendVerificationEmail")
+
+
+const {uploadAvatarToCloudinary} = require("../util/uploadAvatarToCloudinary")
 require("dotenv").config();
+
+// const registerUser = async (req, res) => {
+//   try {
+//     const { username, emailorphone, password, avatar } = req.body;
+
+//     // Validate if input is a phone number or email
+//     const isPhone = /^\d{10}$/.test(emailorphone); // Regex for 10-digit phone number
+//     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailorphone); // Regex for valid email
+
+//     if (!isPhone && !isEmail) {
+//       return res.status(400).json({
+//         success: false,
+//         message:
+//           "Invalid input. Please provide a valid 10-digit phone number or email address.",
+//       });
+//     }
+
+//     // Check if email or phone number already exists
+//     const existingUser = await User.findOne({ emailorphone });
+//     if (existingUser) {
+//       return res.status(400).json({
+//         success: false,
+//         message: isPhone
+//           ? "Phone number already registered"
+//           : "Email already registered",
+//       });
+//     }
+
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Create a new user
+//     const newUser = new User({
+//       username,
+//       emailorphone,
+//       password: hashedPassword,
+//       avatar: avatar || "", // Default to empty string if avatar is not provided
+//     });
+
+//     // Check if email verification is possible
+//     if (isEmail && process.env.USER && process.env.PASS) {
+//       newUser.verificationToken = crypto.randomBytes(20).toString("hex");
+//       await newUser.save();
+
+//       // Send verification email
+//       try {
+//         await sendVerificationEmail(
+//           newUser.emailorphone,
+//           newUser.verificationToken,
+//           username
+//         );
+//         return res.status(200).json({
+//           success: true,
+//           message: "Email registered successfully. Please verify your email.",
+//         });
+//       } catch (emailError) {
+//         console.error("Error sending verification email:", emailError);
+//         return res.status(500).json({
+//           success: false,
+//           message: "User registered, but email verification could not be sent.",
+//         });
+//       }
+//     }
+
+//     // Save user without email verification
+//     await newUser.save();
+//     res.status(200).json({
+//       success: true,
+//       message: isPhone
+//         ? "Phone number registered successfully"
+//         : "Email registered successfully. Email verification skipped.",
+//     });
+//   } catch (error) {
+//     console.error("Error registering user:", error);
+//     res.status(500).json({ success: false, message: "Error registering user" });
+//   }
+// };
+
 
 const registerUser = async (req, res) => {
   try {
     const { username, emailorphone, password, avatar } = req.body;
 
-    // Validate if input is a phone number or email
-    const isPhone = /^\d{10}$/.test(emailorphone); // Regex for 10-digit phone number
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailorphone); // Regex for valid email
+    const isPhone = /^\d{10}$/.test(emailorphone);
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailorphone);
 
     if (!isPhone && !isEmail) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid input. Please provide a valid 10-digit phone number or email address.",
+        message: "Invalid input. Provide a valid phone number or email.",
       });
     }
 
-    // Check if email or phone number already exists
     const existingUser = await User.findOne({ emailorphone });
     if (existingUser) {
       return res.status(400).json({
@@ -32,23 +111,31 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
+    let avatarUrl = "";
+    if (avatar) {
+      try {
+        avatarUrl = await uploadAvatarToCloudinary(avatar);
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: "Avatar upload failed.",
+        });
+      }
+    }
+
     const newUser = new User({
       username,
       emailorphone,
       password: hashedPassword,
-      avatar: avatar || "", // Default to empty string if avatar is not provided
+      avatar: avatarUrl,
     });
 
-    // Check if email verification is possible
     if (isEmail && process.env.USER && process.env.PASS) {
       newUser.verificationToken = crypto.randomBytes(20).toString("hex");
       await newUser.save();
 
-      // Send verification email
       try {
         await sendVerificationEmail(
           newUser.emailorphone,
@@ -57,24 +144,23 @@ const registerUser = async (req, res) => {
         );
         return res.status(200).json({
           success: true,
-          message: "Email registered successfully. Please verify your email.",
+          message: "Email registered. Verify your email.",
         });
       } catch (emailError) {
         console.error("Error sending verification email:", emailError);
         return res.status(500).json({
           success: false,
-          message: "User registered, but email verification could not be sent.",
+          message: "User registered, but email verification failed.",
         });
       }
     }
 
-    // Save user without email verification
     await newUser.save();
     res.status(200).json({
       success: true,
       message: isPhone
         ? "Phone number registered successfully"
-        : "Email registered successfully. Email verification skipped.",
+        : "Email registered successfully. Verification skipped.",
     });
   } catch (error) {
     console.error("Error registering user:", error);
@@ -82,69 +168,12 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Send verification email function
-const sendVerificationEmail = async (email, verificationToken, username) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.USER,
-      pass: process.env.PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
 
-  const mailOptions = {
-    from: process.env.USER, // Use configured email
-    to: email,
-    subject: "Email Verification - Threads",
-    text: `Hi ${username || "there"},
-    
-Thank you for registering on Threads. Please verify your email address by clicking on the link below:
-http://localhost:3000/api/auth/user/verify/${verificationToken}
 
-If you did not request this, please ignore this email.
 
-Best regards,
-The Threads Team`,
-  };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Verification email sent.");
-  } catch (error) {
-    console.error("Error sending email:", error);
-  }
-};
 
-// Verify user token function
-const verifyUserToken = async (req, res) => {
-  try {
-    const { token } = req.params;
 
-    const user = await User.findOne({ verificationToken: token });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Invalid or expired token" });
-    }
-
-    // Mark the user as verified and clear the token
-    user.verified = true;
-    user.verificationToken = undefined;
-    await user.save();
-
-    res
-      .status(200)
-      .json({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Error verifying email:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Email verification failed" });
-  }
-};
 
 // login
 
@@ -226,4 +255,4 @@ const getUsers = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, verifyUserToken, loginUser, getUsers };
+module.exports = { registerUser, loginUser, getUsers };

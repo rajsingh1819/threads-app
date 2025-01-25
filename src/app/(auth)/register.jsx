@@ -10,25 +10,26 @@ import UserForm from "../../constant/userForm";
 import ButtonComp from "../../constant/ButtonComp";
 import { MoveRight } from "lucide-react-native";
 import imagePath from "../../constant/imagePath";
-import NextScreen from "././nextScreen";
+import NextScreen from "../../components/userLogin/nextScreen";
 import { showToast } from "../../constant/showToast";
+import { router } from "expo-router";
 
-const RegisterUser = ({ isLogin, setIsLogin }) => {
+const RegisterUser = () => {
   const [showNextPage, setShowNextPage] = useState(false);
   const [userData, setUserData] = useState({
     emailorphone: "",
     password: "",
     username: "",
+    avatar: "",
   });
 
   const goToLoginPage = () => {
-   
-    setIsLogin(true);
+   router.replace("/");
   };
 
   const nextPage = () => {
     if (!userData.emailorphone || !userData.password) {
-        showToast("error", "Please fill in all fields first!")
+      showToast("error", "Please fill in all fields first!");
       return false;
     }
     setShowNextPage(true);
@@ -64,7 +65,7 @@ const RegisterUser = ({ isLogin, setIsLogin }) => {
             <Text className="text-base">
               Have an account?{" "}
               <TouchableOpacity activeOpacity={0.8} onPress={goToLoginPage}>
-                <Text className="text-blue-800 font-semibold">Sign Up</Text>
+                <Text className="text-blue-800 font-semibold">Sign In</Text>
               </TouchableOpacity>
             </Text>
           </View>

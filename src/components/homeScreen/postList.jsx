@@ -1,6 +1,12 @@
 import { Image, View, Text, TouchableOpacity, Pressable } from "react-native";
-import React, { useState ,useEffect} from "react";
-import { Heart, MessageCircle, Repeat, Send } from "lucide-react-native";
+import React, { useState, useEffect } from "react";
+import {
+  Heart,
+  MessageCircle,
+  Repeat,
+  Send,
+  Ellipsis,
+} from "lucide-react-native";
 import imagePath from "../../constant/imagePath";
 import { formatDistanceToNow } from "date-fns";
 import { router } from "expo-router";
@@ -17,7 +23,6 @@ const PostList = ({ item, action }) => {
     await handleLikeToggle(postItem, action, user, setPostItem);
   };
 
-
   return (
     <View className="p-2 border-b-2 border-slate-400">
       {/* User Info */}
@@ -31,15 +36,15 @@ const PostList = ({ item, action }) => {
           }
         >
           <Image
-            source={{ uri: postItem?.avatar || imagePath?.user }}
+            source={{ uri: postItem?.user?.avatar || imagePath?.user }}
             className="h-10 w-10 rounded-full"
             resizeMode="contain"
           />
         </TouchableOpacity>
 
         <View className="flex-1 justify-center gap-3">
-          <View className="flex-row gap-3 items-center justify-between">
-            <View>
+          <View className="flex-row gap-3 items-center">
+            <View className="flex-1 flex-row items-center gap-2">
               <TouchableOpacity
                 onPress={() =>
                   user?._id === postItem?.user?._id
@@ -51,12 +56,17 @@ const PostList = ({ item, action }) => {
                   {postItem?.user?.username || "Unknown"}
                 </Text>
               </TouchableOpacity>
+              <Text className="text-slate-800">
+                {formatDistanceToNow(new Date(postItem?.createdAt), {
+                  addSuffix: true,
+                })}
+              </Text>
             </View>
-            <Text className="text-slate-800">
-              {formatDistanceToNow(new Date(postItem?.createdAt), {
-                addSuffix: true,
-              })}
-            </Text>
+            {user?._id === postItem?.user?._id && (
+              <TouchableOpacity>
+                <Ellipsis size={25} />
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Post Content */}
@@ -92,7 +102,7 @@ const PostList = ({ item, action }) => {
 
             {/* Reply/Comment Button */}
             <TouchableOpacity
-              onPress={() => router.push(`/threads/${item?._id}`)} 
+              onPress={() => router.push(`/threads/${item?._id}`)}
               className="flex-row items-center"
             >
               <MessageCircle size={25} color="#6b7280" />

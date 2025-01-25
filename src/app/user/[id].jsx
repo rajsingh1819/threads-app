@@ -38,6 +38,7 @@ import Replies from "../../components/profileScreen/Replies";
 import Reposts from "../../components/profileScreen/Reposts";
 import imagePath from "../../constant/imagePath";
 import { singleUser } from "../../provider/userAllApi";
+import ProfileAction from "../../components/profileScreen/ProfileAction";
 
 {
   /* <AlignRight />  <AtSign /> <BadgeCheck /> <DollarSign /> <Expand /> <Globe /> 
@@ -48,7 +49,7 @@ import { singleUser } from "../../provider/userAllApi";
 const User = () => {
   const { id } = useLocalSearchParams();
   const [user, setUser] = useState(null); // Initialize user as null
-  const [activeScreen, setActiveScreen] = useState("Threads");
+ 
 
   const fetchUser = async () => {
     const result = await singleUser(id);
@@ -66,31 +67,17 @@ const User = () => {
     fetchUser();
   }, [id]);
 
-  if (user === null) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size={30} />
-      </View>
-    );
-  }
-
-  const switchScreen = (screen) => {
-    setActiveScreen(screen);
-  };
-
-  const renderScreen = () => {
-    switch (activeScreen) {
-      case "Threads":
-        return <Threads />;
-      case "Replies":
-        return <Replies />;
-      case "Reposts":
-        return <Reposts />;
-      default:
-        return <Threads />;
+   if (!user || !user._id) {
+      return (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size={30} />
+          <Text>Loading user data...</Text>
+        </View>
+      );
     }
-  };
+    
 
+  
   const handleBackPress = () => {
     if (router.canGoBack()) {
       router.back();
@@ -137,7 +124,7 @@ const User = () => {
                 !user?.image && "bg-gray-400"
               } rounded-full`}
             >
-              {!user?.image ? (
+              {!user?.avatar ? (
                 <UserRoundCog size={40} fill="black" />
               ) : (
                 <Image
@@ -179,30 +166,9 @@ const User = () => {
             </Text>
           </View>
         ) : (
-          <>
-            <View className="flex-row mt-3 justify-between gap-2 border-b border-slate-400">
-              {["Threads", "Replies", "Reposts"].map((item, index) => (
-                <Pressable
-                  key={index}
-                  onPress={() => switchScreen(item)}
-                  className={`flex-1 items-center p-2 ${
-                    activeScreen === item ? "border-b-2 border-black" : ""
-                  }`}
-                >
-                  <Text
-                    className={`text-base font-semibold ${
-                      activeScreen === item ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    {item}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-
-            {/* Render Content Based on Active Tab */}
-            {renderScreen()}
-          </>
+         
+          <ProfileAction user={user}/>
+         
         )}
       </View>
     </SafeAreaView>

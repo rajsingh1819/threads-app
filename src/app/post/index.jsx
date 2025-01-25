@@ -81,7 +81,7 @@ const post = () => {
           <View className="flex-row mb-4 ">
             {/* User Avatar */}
             <Image
-              source={{ uri: imagePath?.user }}
+              source={{ uri:  user?.avatar || imagePath?.user   }}
               className="h-10 w-10 rounded-full"
               resizeMode="contain"
             />

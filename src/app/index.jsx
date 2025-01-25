@@ -1,41 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, ActivityIndicator, SafeAreaView } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
-import { useDispatch, useSelector } from "react-redux";
-import { checkAuth  } from "../provider/auth";
 import imagePath from "../constant/imagePath";
 
-
-
 const Index = () => {
-  const dispatch = useDispatch();
-  const { isAuthenticated, isLoading: authLoading } = useSelector((state) => state.auth);
+  const [isSplashLoading, setIsSplashLoading] = useState(true);
+  const [authToken, setAuthToken] = useState(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Simulate initial splash loading
+  // Simulate splash screen loading
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-    return () => clearTimeout(timeout); 
+    const splashTimeout = setTimeout(() => {
+      setIsSplashLoading(false);
+    }, 3000); // 3 seconds splash duration
+    return () => clearTimeout(splashTimeout);
   }, []);
 
-  // Check authentication after splash loading
+  // Check authentication token after splash screen
   useEffect(() => {
-    if (!isLoading) {
-      dispatch(checkAuth ());
+    const checkToken = async () => {
+      setIsCheckingAuth(true);
+      try {
+        const token = await AsyncStorage.getItem("authToken"); // Get token from AsyncStorage
+        setAuthToken(token); // Save token to state
+      } catch (err) {
+        console.error("Error reading authToken:", err);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    if (!isSplashLoading) {
+      checkToken();
     }
-  }, [isLoading, dispatch]);
+  }, [isSplashLoading]);
 
-
-  if (isLoading) {
-    // Show the loading screen first
+  // Splash screen display
+  if (isSplashLoading) {
     return (
       <SafeAreaView className="flex-1 items-center px-5 bg-green-500">
         <View className="flex-1 justify-center items-center">
           <Image
-            source={{ uri: imagePath?.logo }} // Placeholder image
+            source={{ uri: imagePath?.logo }} // Replace with your actual logo path
             className="w-36 h-24"
             resizeMode="contain"
           />
@@ -48,12 +55,17 @@ const Index = () => {
     );
   }
 
-  if (authLoading) {
-    return <View className="flex-1 justify-center items-center"><ActivityIndicator size={30} color="black"/></View>;
+  // Loader for token check
+  if (isCheckingAuth) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size={30} color="black" />
+      </View>
+    );
   }
 
-  // Navigate based on authentication state
-  return isAuthenticated ? <Redirect href="/(tabs)" /> : <Redirect href="/(auth)" />;
+  // Redirect based on token presence
+  return authToken ? <Redirect href="/(tabs)" /> : <Redirect href="/(auth)" />;
 };
 
 export default Index;

@@ -39,7 +39,7 @@ const HomeHeader = () => {
         {/* User Avatar */}
        
        <Image
-          source={{ uri: imagePath?.user }}
+          source={{ uri: user?.avatar || imagePath?.user}}
           className="h-12 w-12 rounded-full"
           resizeMode="contain"
         />

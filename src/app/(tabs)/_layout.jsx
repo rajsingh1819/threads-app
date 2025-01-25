@@ -7,8 +7,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
   // const dispatch = useDispatch();
-  // const { isAuthenticated, isLoading: authLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isLoading: authLoading } = useSelector((state) => state.auth);
    LogBox.ignoreLogs(['Clerk: Clerk has been loaded with development keys']);
+   const checkToken  =  AsyncStorage.getItem("authToken")
+   useEffect(()=>{
+    if(!checkToken){
+          router.replace("/(auth)");
+    }
+       
+
+   },[checkToken])
  
   return (
     <Tabs

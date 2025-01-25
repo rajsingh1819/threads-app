@@ -69,35 +69,7 @@ const getSinglePost = async (req, res) => {
   }
 };
 
-const getUserPosts = async (req, res) => {
-  const { userId } = req.params;
 
-  try {
-    const posts = await Post.find({ user: userId })
-      .populate("user", "username avatar")
-      .populate("comments.user", "username avatar")
-      .populate("comments.replies.user", "username avatar");
-
-    if (posts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No posts found for this user",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Fetched posts successfully!",
-      posts,
-    });
-  } catch (error) {
-    console.error("Error fetching user posts:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching the posts",
-    });
-  }
-};
 
 
 // Create a new comment or reply to an existing comment
@@ -273,13 +245,35 @@ const unlikeEntity = async (req, res) => {
   }
 };
 
+
+const deletePost = async (req,res)=>{
+   const {userId} = req.params;
+   try{
+    if (!userId) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+   return res.status(200).json({success:true, message:"Post Delete Successfully!"})
+
+   }
+   catch(error){
+       return  res.status(500).json({success:false, message:"somthing went wrong!"})
+   }
+ 
+
+ 
+
+}
+
 module.exports = {
   createPost,
   getSinglePost,
   getPosts,
-  getUserPosts,
   likeEntity,
   unlikeEntity,
-
-  createCommentOrReply,
+createCommentOrReply,
+deletePost
 };

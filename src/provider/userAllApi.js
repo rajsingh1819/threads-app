@@ -238,27 +238,29 @@ export const singleUser = async (userId) => {
   }
 };
 
-export const getUsersPosts = async (userId) => {
-  const api = `${url}/api/posts/all/user/${userId}`;
+export const deleteUserPost = async (postId) => {
+  const api = `${url}/api/posts/delete/${postId}`;
 
   try {
     const response = await fetch(api, {
-      method: "GET",
+      method: "DELETE",
     });
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error("Deletation error:", errorData);
       return {
         success: false,
-        message: errorData.message || "Failed to fetch posts",
+        message: errorData.message || "Failed to delete",
       };
     }
 
-    const data = await response.json(); 
-    // console.log("Fetched posts successfully!:", data);
-    return data; // Return the entire response object
+    // Handle success response
+    const data = await response.json();
+    console.log("delete successfully:", data);
+    return data;
   } catch (error) {
-    console.error("Unexpected error fetching posts:", error);
+    console.error("Unexpected error:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };

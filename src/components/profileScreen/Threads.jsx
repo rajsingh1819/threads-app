@@ -13,7 +13,7 @@ const Threads = ({ posts }) => {
   }
 
   return (
-    <View className= "flex-1 mt-5">
+    <View className= "flex-1  mt-5">
     <FlatList
       data={posts}
       keyExtractor={(post) => post._id.toString()}

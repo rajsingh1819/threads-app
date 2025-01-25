@@ -4,11 +4,12 @@ const router = express.Router();
 
 const {
   registerUser,
-  verifyUserToken,
+ 
   loginUser,
   getUsers,
 } = require("../controller/auth-controller");
 
+const {verifyUserToken} =require("../util/sendVerificationEmail")
 const {
   follow,
   unfollow,

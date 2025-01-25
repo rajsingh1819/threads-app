@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Image, View, Text, TouchableOpacity } from "react-native";
-import { Heart, MessageCircle, Repeat, Send } from "lucide-react-native";
+import {
+  Heart,
+  MessageCircle,
+  Repeat,
+  Send,
+  Ellipsis,
+} from "lucide-react-native";
 import imagePath from "../../constant/imagePath";
 import { formatDistanceToNow } from "date-fns";
 import { handleLikeToggle } from "../../util/handleIconAsction";
@@ -35,8 +41,11 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
               : router.push(`/user/${postItem?.user?._id}`)
           }
         >
-          <Image
-            source={{ uri: postItem?.avatar || imagePath?.user }}
+          <Image 
+
+         
+
+            source={{ uri: postItem?.user?.avatar || imagePath?.user }}
             className="h-10 w-10 rounded-full"
             resizeMode="contain"
           />
@@ -44,23 +53,31 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
 
         <View className="flex-1 justify-center gap-3">
           {/* User Info */}
-          <View className="flex-row gap-3 items-center justify-between">
-            <TouchableOpacity
-              onPress={() =>
-                user?._id === postItem?.user?._id
-                  ? router.push("/profile")
-                  : router.push(`/user/${postItem?.user?._id}`)
-              }
-            >
-              <Text className="text-lg font-bold text-gray-800">
-                {postItem?.user?.username || "Unknown"}
+          <View className="flex-row gap-3 items-center">
+            <View className="flex-1 flex-row items-center gap-2">
+              <TouchableOpacity
+                onPress={() =>
+                  user?._id === postItem?.user?._id
+                    ? router.push("/profile")
+                    : router.push(`/user/${postItem?.user?._id}`)
+                }
+              >
+                <Text className="text-lg font-bold text-gray-800">
+                  {postItem?.user?.username || "Unknown"}
+                </Text>
+              </TouchableOpacity>
+              <Text className="text-slate-800">
+                {formatDistanceToNow(new Date(postItem?.createdAt), {
+                  addSuffix: true,
+                })}
               </Text>
-            </TouchableOpacity>
-            <Text className="text-slate-800">
-              {formatDistanceToNow(new Date(postItem?.createdAt), {
-                addSuffix: true,
-              })}
-            </Text>
+            </View>
+
+            {user?._id === postItem?.user?._id && (
+              <TouchableOpacity>
+                <Ellipsis size={25} />
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Post Content */}

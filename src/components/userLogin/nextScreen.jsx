@@ -1,41 +1,118 @@
-import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import { ChevronLeft, AtSign } from "lucide-react-native";
 import ButtonComp from "../../constant/ButtonComp";
-import { ChevronLeft, AtSign, UserRound } from "lucide-react-native";
 import { showToast } from "../../constant/showToast";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../../provider/auth";
+import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
   const dispatch = useDispatch();
+  const [avatarUri, setAvatarUri] = useState(userData.avatar || "");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const goBack = () => {
     setShowNextPage(false);
     setUserData({ ...userData, username: "", password: "" });
   };
 
-  const handleSaveUsername = () => {
-    const formData = {
-      username: userData.username,
-      emailorphone: userData.emailorphone,
-      password: userData.password,
-    };
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 0.5,
+      });
+      if (!result.canceled && result.assets?.length) {
+        setAvatarUri(result.assets[0].uri);
+        setError(""); // Clear any previous error
+      } else {
+        setError("Image selection canceled or failed.");
+      }
+    } catch (err) {
+      setError("Error picking image: " + err.message);
+    }
+  };
 
-    if (!formData.emailorphone || !formData.password || !formData.username) {
-      showToast("error", "Please fill the field first!");
+  const handleSaveUsername = async () => {
+    if (!userData.username || !userData.emailorphone || !userData.password) {
+      showToast("error", "Please fill all fields!");
       return;
     }
-    dispatch(registerUser(formData));
-    console.log("Collected Data:", userData);
-    setUserData({
-      username: "",
-      emailorphone: "",
-      password: "",
-    });
-    setShowNextPage(false);
+    setIsLoading(true);
+
+    try {
+      let avatarBase64 = "";
+      if (avatarUri) {
+        const imageResponse = await fetch(avatarUri);
+        const imageBlob = await imageResponse.blob();
+        const reader = new FileReader();
+
+        reader.onloadend = async () => {
+          avatarBase64 = reader.result;
+
+          const formData = {
+            ...userData,
+            avatar: avatarBase64,
+          };
+
+          const result = await dispatch(registerUser(formData));
+          if (result?.payload?.success) {
+            setIsLoading(false);
+            showToast("success", "User registered successfully!");
+            setUserData({
+              username: "",
+              emailorphone: "",
+              password: "",
+              avatar: "",
+            });
+            setAvatarUri("");
+            router.replace("/");
+          }
+        };
+        reader.readAsDataURL(imageBlob);
+      }
+    } catch (err) {
+      setError("Error uploading avatar: " + err.message);
+    } finally {
+      setError("");
+    }
   };
 
   return (
-    <View className="flex-1 p-2">
+    <View className="flex-1 p-4">
+      {isLoading && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.75)",
+            zIndex: 50,
+          }}
+        >
+          <ActivityIndicator size={30} color="blue" />
+          <Text style={{ marginTop: 10, fontSize: 16, fontWeight: "bold" }}>
+            Registering user...
+          </Text>
+        </View>
+      )}
+
       <TouchableOpacity
         activeOpacity={0.8}
         className="flex-row items-center"
@@ -47,21 +124,20 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
 
       <View className="flex-1 gap-10">
         <View className="items-center gap-1">
-          {!userData?.avatar ? (
-            <UserRound
-              size={50}
-              className="h-32 w-32 rounded-full bg-slate-500 border "
-            />
-          ) : (
-            <Image
-              source={{ uri: userData.avatar }} // Add the source prop
-              className="h-32 w-32 rounded-full bg-slate-500 border "
-              resizeMode="contain"
-            />
-          )}
-
-          <Text></Text>
-          <Text className="font-bold text-base">Upload Image</Text>
+          <View className="items-center gap-1">
+            <TouchableOpacity onPress={pickImage}>
+              {avatarUri ? (
+                <Image
+                  source={{ uri: avatarUri }}
+                  className="w-32 h-32 rounded-full"
+                />
+              ) : (
+                <View className="w-32 h-32 rounded-full bg-slate-500 border flex items-center justify-center">
+                  <Text className="text-white">No Avatar Selected</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className="border p-2 w-full rounded-lg bg-white">
@@ -79,7 +155,9 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
           </View>
         </View>
       </View>
+
       <ButtonComp title="Save & Print" onPress={handleSaveUsername} />
+      {error && <Text className="text-red-500 mt-2">{error}</Text>}
     </View>
   );
 };
