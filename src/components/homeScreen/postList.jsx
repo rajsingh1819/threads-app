@@ -36,7 +36,7 @@ const PostList = ({ item, action }) => {
           }
         >
           <Image
-            source={{ uri: postItem?.user?.avatar || imagePath?.user }}
+            source={{ uri: postItem?.user?.avatar?.cloudinary  || imagePath?.user }}
             className="h-10 w-10 rounded-full"
             resizeMode="contain"
           />
@@ -44,7 +44,7 @@ const PostList = ({ item, action }) => {
 
         <View className="flex-1 justify-center gap-3">
           <View className="flex-row gap-3 items-center">
-            <View className="flex-1 flex-row items-center gap-2">
+            <View className="flex-1 flex-row items-center ">
               <TouchableOpacity
                 onPress={() =>
                   user?._id === postItem?.user?._id
@@ -56,17 +56,22 @@ const PostList = ({ item, action }) => {
                   {postItem?.user?.username || "Unknown"}
                 </Text>
               </TouchableOpacity>
-              <Text className="text-slate-800">
+            
+            </View>
+            <View className="flex-row items-center gap-2">
+            <Text className="text-slate-800">
                 {formatDistanceToNow(new Date(postItem?.createdAt), {
                   addSuffix: true,
                 })}
               </Text>
-            </View>
-            {user?._id === postItem?.user?._id && (
+              {user?._id === postItem?.user?._id && (
               <TouchableOpacity>
                 <Ellipsis size={25} />
               </TouchableOpacity>
             )}
+
+            </View>
+           
           </View>
 
           {/* Post Content */}

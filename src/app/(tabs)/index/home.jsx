@@ -22,11 +22,11 @@ const Home = () => {
         setPostData([...randomizedPosts]);
       } else {
         showToast("error", result.message || "Something went wrong");
-        console.error(result.message);
+        // console.error(result.message);
       }
     } catch (error) {
       showToast("error", "Failed to fetch posts");
-      console.error("Error fetching posts:", error);
+      // console.error("Error fetching posts:", error);
     } finally {
       setRefreshing(false); // Hide refreshing indicator
     }

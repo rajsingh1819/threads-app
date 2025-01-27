@@ -87,7 +87,7 @@ const Reply = () => {
             <View className="flex-row mb-4">
               {/* User Avatar */}
               <Image
-                source={{ uri: parsedUser?.avatar || imagePath?.user }}
+                source={{ uri: parsedUser?.avatar?.cloudinary  || imagePath?.user }}
                 className="h-10 w-10 rounded-full"
                 resizeMode="contain"
               />

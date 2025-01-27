@@ -85,7 +85,6 @@ export const getAllPost = async () => {
 };
 
 export const checkPrivate = async ({ userId, isPrivate }) => {
-  // const api = `${url}/api/auth/profile/${userId}/set-privacy`;
   const api = `${url}/api/auth/profile/set-privacy`;
 
   try {
@@ -264,3 +263,25 @@ export const deleteUserPost = async (postId) => {
     return { success: false, message: "An unexpected error occurred" };
   }
 };
+
+
+export const getAllUsers = async (userId) => {
+  const api = `${url}/api/auth/users/${userId}`;
+  try {
+    const response = await fetch(api, { method: "GET" });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Users fetch error:", errorData);
+      return {
+        success: false,
+        message: errorData.message || "Failed to fetch users",
+      };
+    }
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+};
+

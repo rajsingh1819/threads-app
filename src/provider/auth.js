@@ -61,7 +61,8 @@ export const loginUser = createAsyncThunk(
         return { token: data.token, user: data.user };
       }
     } catch (error) {
-      return rejectWithValue(error.message);
+      showToast("error", `${error.message}`|| "User not registered!");
+      return rejectWithValue(error.message );
     }
   }
 );

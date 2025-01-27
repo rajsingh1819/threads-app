@@ -19,8 +19,9 @@ const ForgotPassword = () => {
         <Text className="ml-2 text-xl">Back</Text>
       </TouchableOpacity>
       <View className="items-center">
+        <Text> Under Developing..</Text>
         <Text className="text-base font-semibold">
-          Under Developing please wait For some time...
+          please wait For some time...
         </Text>
       </View>
 

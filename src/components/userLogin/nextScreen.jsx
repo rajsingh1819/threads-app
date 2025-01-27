@@ -45,53 +45,64 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
     }
   };
 
+
+
   const handleSaveUsername = async () => {
     if (!userData.username || !userData.emailorphone || !userData.password) {
       showToast("error", "Please fill all fields!");
       return;
     }
     setIsLoading(true);
-
+  
     try {
-      let avatarBase64 = "";
+      let formData = { ...userData };
+  
+      // Process the avatar only if the avatar URI is available
       if (avatarUri) {
-        const imageResponse = await fetch(avatarUri);
-        const imageBlob = await imageResponse.blob();
-        const reader = new FileReader();
-
-        reader.onloadend = async () => {
-          avatarBase64 = reader.result;
-
-          const formData = {
-            ...userData,
-            avatar: avatarBase64,
-          };
-
-          const result = await dispatch(registerUser(formData));
-          if (result?.payload?.success) {
-            setIsLoading(false);
-            showToast("success", "User registered successfully!");
-            setUserData({
-              username: "",
-              emailorphone: "",
-              password: "",
-              avatar: "",
-            });
-            setAvatarUri("");
-            router.replace("/");
-          }
-        };
-        reader.readAsDataURL(imageBlob);
+        try {
+          const imageResponse = await fetch(avatarUri);
+          const imageBlob = await imageResponse.blob();
+          const reader = new FileReader();
+  
+          // Convert the image to base64
+          const avatarBase64 = await new Promise((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = (err) => reject(err);
+            reader.readAsDataURL(imageBlob);
+          });
+  
+          formData.avatar = avatarBase64; // Add the avatar to formData
+        } catch (err) {
+          setError("Error processing avatar: " + err.message);
+          setIsLoading(false);
+          return;
+        }
+      }
+  
+      // Dispatch the registration action
+      const result = await dispatch(registerUser(formData));
+      if (result?.payload?.success) {
+        showToast("success", "User registered successfully!");
+        setUserData({
+          username: "",
+          emailorphone: "",
+          password: "",
+          avatar: "",
+        });
+        setAvatarUri("");
+        router.replace("/");
+      } else {
+        setError("Registration failed. Please try again.");
       }
     } catch (err) {
-      setError("Error uploading avatar: " + err.message);
+      setError("Error during registration: " + err.message);
     } finally {
-      setError("");
+      setIsLoading(false);
     }
   };
-
+  
   return (
-    <View className="flex-1 p-4">
+    <View className="flex-1 p-2">
       {isLoading && (
         <View
           style={{
@@ -124,20 +135,18 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
 
       <View className="flex-1 gap-10">
         <View className="items-center gap-1">
-          <View className="items-center gap-1">
-            <TouchableOpacity onPress={pickImage}>
-              {avatarUri ? (
-                <Image
-                  source={{ uri: avatarUri }}
-                  className="w-32 h-32 rounded-full"
-                />
-              ) : (
-                <View className="w-32 h-32 rounded-full bg-slate-500 border flex items-center justify-center">
-                  <Text className="text-white">No Avatar Selected</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={pickImage}>
+            {avatarUri ? (
+              <Image
+                source={{ uri: avatarUri }}
+                className="w-32 h-32 rounded-full"
+              />
+            ) : (
+              <View className="w-32 h-32 rounded-full bg-slate-500 border flex items-center justify-center">
+                <Text className="text-white">No Avatar Selected</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         <View className="border p-2 w-full rounded-lg bg-white">
@@ -154,10 +163,13 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
             />
           </View>
         </View>
+        {error ? (
+        <Text className="text-red-500 mt-2">Info : {error} </Text>
+      ) : null}
       </View>
 
       <ButtonComp title="Save & Print" onPress={handleSaveUsername} />
-      {error && <Text className="text-red-500 mt-2">{error}</Text>}
+     
     </View>
   );
 };

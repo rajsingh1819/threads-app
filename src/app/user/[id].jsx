@@ -128,7 +128,7 @@ const User = () => {
                 <UserRoundCog size={40} fill="black" />
               ) : (
                 <Image
-                  source={{ uri: user?.image || imagePath?.user }}
+                  source={{ uri: user?.avatar?.cloudinary || imagePath?.user }}
                   className="w-16 h-16 rounded-full"
                   resizeMode="contain"
                 />

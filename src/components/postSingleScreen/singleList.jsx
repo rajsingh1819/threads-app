@@ -41,11 +41,10 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
               : router.push(`/user/${postItem?.user?._id}`)
           }
         >
-          <Image 
-
-         
-
-            source={{ uri: postItem?.user?.avatar || imagePath?.user }}
+          <Image
+            source={{
+              uri: postItem?.user?.avatar?.cloudinary || imagePath?.user,
+            }}
             className="h-10 w-10 rounded-full"
             resizeMode="contain"
           />
@@ -54,7 +53,7 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
         <View className="flex-1 justify-center gap-3">
           {/* User Info */}
           <View className="flex-row gap-3 items-center">
-            <View className="flex-1 flex-row items-center gap-2">
+            <View className="flex-1 ">
               <TouchableOpacity
                 onPress={() =>
                   user?._id === postItem?.user?._id
@@ -66,18 +65,20 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
                   {postItem?.user?.username || "Unknown"}
                 </Text>
               </TouchableOpacity>
+            </View>
+
+            <View className="flex-row items-center gap-2">
               <Text className="text-slate-800">
                 {formatDistanceToNow(new Date(postItem?.createdAt), {
                   addSuffix: true,
-                })}
+                })} 
               </Text>
+              {user?._id === postItem?.user?._id && (
+                <TouchableOpacity>
+                  <Ellipsis size={25} />
+                </TouchableOpacity>
+              )}
             </View>
-
-            {user?._id === postItem?.user?._id && (
-              <TouchableOpacity>
-                <Ellipsis size={25} />
-              </TouchableOpacity>
-            )}
           </View>
 
           {/* Post Content */}

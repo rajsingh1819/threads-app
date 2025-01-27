@@ -3,10 +3,12 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-const { sendVerificationEmail } = require("../util/sendVerificationEmail")
+const { sendVerificationEmail } = require("../util/sendVerificationEmail");
 
-
-const {uploadAvatarToCloudinary} = require("../util/uploadAvatarToCloudinary")
+const {
+  uploadAvatarToCloudinary,
+  saveAvatarLocally,
+} = require("../util/uploadAvatarToCloudinary");
 require("dotenv").config();
 
 // const registerUser = async (req, res) => {
@@ -86,11 +88,92 @@ require("dotenv").config();
 //   }
 // };
 
+// const registerUser = async (req, res) => {
+//   try {
+//     const { username, emailorphone, password, avatar } = req.body;
+
+//     const isPhone = /^\d{10}$/.test(emailorphone);
+//     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailorphone);
+
+//     if (!isPhone && !isEmail) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid input. Provide a valid phone number or email.",
+//       });
+//     }
+
+//     const existingUser = await User.findOne({ emailorphone });
+//     if (existingUser) {
+//       return res.status(400).json({
+//         success: false,
+//         message: isPhone
+//           ? "Phone number already registered"
+//           : "Email already registered",
+//       });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     let avatarUrl = "";
+//     if (avatar) {
+//       try {
+//         avatarUrl = await uploadAvatarToCloudinary(avatar);
+//       } catch (error) {
+//         return res.status(500).json({
+//           success: false,
+//           message: "Avatar upload failed.",
+//         });
+//       }
+//     }
+
+//     const newUser = new User({
+//       username,
+//       emailorphone,
+//       password: hashedPassword,
+//       avatar: avatarUrl,
+//     });
+
+//     if (isEmail && process.env.USER && process.env.PASS) {
+//       newUser.verificationToken = crypto.randomBytes(20).toString("hex");
+//       await newUser.save();
+
+//       try {
+//         await sendVerificationEmail(
+//           newUser.emailorphone,
+//           newUser.verificationToken,
+//           username
+//         );
+//         return res.status(200).json({
+//           success: true,
+//           message: "Email registered. Verify your email.",
+//         });
+//       } catch (emailError) {
+//         console.error("Error sending verification email:", emailError);
+//         return res.status(500).json({
+//           success: false,
+//           message: "User registered, but email verification failed.",
+//         });
+//       }
+//     }
+
+//     await newUser.save();
+//     res.status(200).json({
+//       success: true,
+//       message: isPhone
+//         ? "Phone number registered successfully"
+//         : "Email registered successfully. Verification skipped.",
+//     });
+//   } catch (error) {
+//     console.error("Error registering user:", error);
+//     res.status(500).json({ success: false, message: "Error registering user" });
+//   }
+// };
 
 const registerUser = async (req, res) => {
   try {
     const { username, emailorphone, password, avatar } = req.body;
 
+    // Validate phone or email
     const isPhone = /^\d{10}$/.test(emailorphone);
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailorphone);
 
@@ -101,6 +184,7 @@ const registerUser = async (req, res) => {
       });
     }
 
+    // Check if user already exists
     const existingUser = await User.findOne({ emailorphone });
     if (existingUser) {
       return res.status(400).json({
@@ -111,43 +195,50 @@ const registerUser = async (req, res) => {
       });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let avatarUrl = "";
-    if (avatar) {
-      try {
-        avatarUrl = await uploadAvatarToCloudinary(avatar);
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: "Avatar upload failed.",
-        });
-      }
-    }
-
+    // Create the user
     const newUser = new User({
       username,
       emailorphone,
       password: hashedPassword,
-      avatar: avatarUrl,
     });
 
-    if (isEmail && process.env.USER && process.env.PASS) {
-      newUser.verificationToken = crypto.randomBytes(20).toString("hex");
-      await newUser.save();
-
+    // Avatar handling (if provided)
+    if (avatar) {
       try {
+        const userId = newUser._id.toString();
+        const cloudinaryUrl = await uploadAvatarToCloudinary(avatar, userId);
+        const localPath = await saveAvatarLocally(avatar, userId);
+
+        newUser.avatar = { cloudinary: cloudinaryUrl, local: localPath };
+      } catch (error) {
+        console.error("Avatar upload failed:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Avatar upload failed. Try again later.",
+        });
+      }
+    }
+
+    // Email verification (if applicable)
+    if (isEmail && process.env.USER && process.env.PASS) {
+      try {
+        newUser.verificationToken = crypto.randomBytes(20).toString("hex");
         await sendVerificationEmail(
           newUser.emailorphone,
           newUser.verificationToken,
           username
         );
+
+        await newUser.save();
         return res.status(200).json({
           success: true,
-          message: "Email registered. Verify your email.",
+          message: "Email registered successfully. Please verify your email.",
         });
-      } catch (emailError) {
-        console.error("Error sending verification email:", emailError);
+      } catch (error) {
+        console.error("Error sending verification email:", error);
         return res.status(500).json({
           success: false,
           message: "User registered, but email verification failed.",
@@ -155,25 +246,22 @@ const registerUser = async (req, res) => {
       }
     }
 
+    // Save user to database
     await newUser.save();
-    res.status(200).json({
+
+    res.status(201).json({
       success: true,
-      message: isPhone
-        ? "Phone number registered successfully"
-        : "Email registered successfully. Verification skipped.",
+      message: "User registered successfully.",
+      user: newUser,
     });
   } catch (error) {
     console.error("Error registering user:", error);
-    res.status(500).json({ success: false, message: "Error registering user" });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while registering the user.",
+    });
   }
 };
-
-
-
-
-
-
-
 
 // login
 
@@ -243,16 +331,19 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 const getUsers = async (req, res) => {
   const { userId } = req.params;
   try {
     const users = await User.find({ _id: { $ne: userId } });
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Error fetching users" });
   }
 };
+
 
 module.exports = { registerUser, loginUser, getUsers };

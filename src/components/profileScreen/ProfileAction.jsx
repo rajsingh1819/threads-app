@@ -14,7 +14,7 @@ const ProfileAction = ({ user }) => {
     if (!user) return false;
     try {
       const result = await getAllPost();
-      console.log(" result", result);
+      // console.log(" result", result);
       if (result.success) {
         setPostData(result.data.posts || []);
       } else {
