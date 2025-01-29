@@ -264,7 +264,6 @@ export const deleteUserPost = async (postId) => {
   }
 };
 
-
 export const getAllUsers = async (userId) => {
   const api = `${url}/api/auth/users/${userId}`;
   try {
@@ -282,6 +281,55 @@ export const getAllUsers = async (userId) => {
   } catch (error) {
     console.error("Unexpected error:", error);
     return { success: false, message: "An unexpected error occurred" };
+  }
+};
+
+
+
+
+export const FollowUser = async (currentUserId, selectedUserId) => {
+  const api = `${url}/api/auth/user/follow`;
+
+  try {
+    const response = await fetch(api, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentUserId, selectedUserId }),
+    });
+
+    const data = await response.json(); // Parse response
+
+    if (!response.ok) {
+      throw new Error(data.message || "Follow request failed");
+    }
+
+    return data; // Return API response
+  } catch (error) {
+    console.error("Error sending follow request:", error.message);
+    return null;
+  }
+};
+
+export const UnfollowUser = async (currentUserId, targetUserId) => {
+  const api = `${url}/api/auth/user/unfollow`;
+
+  try {
+    const response = await fetch(api, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentUserId, targetUserId }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Unfollow request failed");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error unfollowing user:", error.message);
+    return null;
   }
 };
 

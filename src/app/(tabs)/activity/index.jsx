@@ -48,7 +48,7 @@ export default () => {
 
   return (
     <SafeAreaView className="flex-1"> 
-      <ActiveMain  users={users} />
+      <ActiveMain  users={users}   currentUserId={ user?._id} />
     </SafeAreaView>
   );
 };

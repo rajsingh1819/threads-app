@@ -15,27 +15,23 @@ const follow = async (req, res) => {
     }
 
     if (selectedUser.isPrivate) {
-      // Send follow request
       await User.findByIdAndUpdate(currentUserId, {
         $addToSet: { sentFollowRequests: selectedUserId },
       });
       await User.findByIdAndUpdate(selectedUserId, {
         $addToSet: { receivedFollowRequests: currentUserId },
       });
-      return res
-        .status(200)
-        .json({ message: "Follow request sent successfully." });
+      return res.status(200).json({ message: "Follow request sent successfully." });
     } else {
-      // Direct follow
       await User.findByIdAndUpdate(currentUserId, {
         $addToSet: { following: selectedUserId },
       });
       await User.findByIdAndUpdate(selectedUserId, {
         $addToSet: { followers: currentUserId },
       });
-      return res
-        .status(200)
-        .json({ message: "You are now following the user." });
+
+      const updatedUser = await User.findById(currentUserId);
+      return res.status(200).json({ message: "You are now following the user.", user: updatedUser });
     }
   } catch (error) {
     console.error("Error in follow operation:", error);
@@ -44,29 +40,30 @@ const follow = async (req, res) => {
 };
 
 const unfollow = async (req, res) => {
-  const { loggedInUserId, targetUserId } = req.body;
+  const { currentUserId, targetUserId } = req.body;
 
-  if (!loggedInUserId || !targetUserId) {
+  if (!currentUserId || !targetUserId) {
     return res.status(400).json({ message: "User IDs are required" });
   }
 
   try {
-    // Remove loggedInUserId from targetUserId's followers
     await User.findByIdAndUpdate(targetUserId, {
-      $pull: { followers: loggedInUserId },
+      $pull: { followers: currentUserId },
     });
 
-    // Remove targetUserId from loggedInUserId's following
-    await User.findByIdAndUpdate(loggedInUserId, {
+    await User.findByIdAndUpdate(currentUserId, {
       $pull: { following: targetUserId },
     });
 
-    res.status(200).json({ message: "Unfollowed successfully" });
+    const updatedUser = await User.findById(currentUserId);
+    res.status(200).json({ message: "Unfollowed successfully", user: updatedUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error in unfollowing user" });
   }
 };
+
+
 
 const approveFollowRequest = async (req, res) => {
   const { currentUserId, senderUserId } = req.body;

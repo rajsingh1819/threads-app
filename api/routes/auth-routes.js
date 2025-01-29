@@ -26,6 +26,7 @@ router.get("/users/:userId", getUsers);
 
 router.post("/user/follow", follow);
 router.post("/user/unfollow", unfollow);
+
 router.post("/user/approveFollowRequest", approveFollowRequest);
 router.post("/user/denyFollowRequest", denyFollowRequest);
 router.post("/profile/set-privacy", userPrivacy);
