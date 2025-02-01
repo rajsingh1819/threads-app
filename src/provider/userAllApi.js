@@ -333,3 +333,58 @@ export const UnfollowUser = async (currentUserId, targetUserId) => {
   }
 };
 
+
+
+// Handle user request to approve or reject follow request
+
+export const handleAccept = async (currentUserId, senderUserId) => {
+  const api = `${url}/api/auth/user/approveFollowRequest`;
+  try {
+    const response = await fetch(api, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        currentUserId, senderUserId
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error approving follow request");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error accepting request:", error);
+    showToast("error", "Failed to approve request");
+  }
+};
+
+export const handleReject = async (currentUserId, senderUserId) => {
+  const api = `${url}/api/auth/user/denyFollowRequest`;
+  try {
+    const response = await fetch(api, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        currentUserId, senderUserId
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error rejecting follow request");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+    showToast("error", "Failed to deny request");
+  }
+};

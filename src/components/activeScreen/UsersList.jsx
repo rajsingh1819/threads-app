@@ -5,25 +5,29 @@ import { FollowUser, UnfollowUser } from "../../provider/userAllApi";
 import imagePath from "../../constant/imagePath";
 import { Link } from "expo-router";
 
-const UsersList = ({ item, currentUserId }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+import {
+  GlobeLock,
+  Globe,
+  Instagram,
+  Twitter,
+  AtSign,
+  UserRoundCog,
+  AlignRight,
+} from "lucide-react-native";
 
-  // Check if user is already following
-  // console.log("response item==>", item);
+const UsersList = ({ item, currentUser }) => {
+  const [isFollowing, setIsFollowing] = useState(false);
+  
 
   useEffect(() => {
-    if (item?.followers?.includes(currentUserId)) {
-      setIsFollowing(true);
-    } else {
-      setIsFollowing(false);
-    }
-  }, [item?.followers, currentUserId]);
+    // Check if user is already following
+    setIsFollowing(item?.followers?.includes(currentUser?._id));
+  }, [item?.followers, currentUser?._id]);
 
   const handleFollow = async () => {
     try {
-      const response = await FollowUser(currentUserId, item._id);
+      const response = await FollowUser(currentUser?._id, item._id);
       if (response) {
-        console.log("response follow==>", response);
         setIsFollowing(true);
       }
     } catch (error) {
@@ -33,10 +37,8 @@ const UsersList = ({ item, currentUserId }) => {
 
   const handleUnfollow = async () => {
     try {
-      const response = await UnfollowUser(currentUserId, item._id);
+      const response = await UnfollowUser(currentUser?._id, item._id);
       if (response) {
-        console.log("response unfollow ==>", response);
-
         setIsFollowing(false);
       }
     } catch (error) {
@@ -44,28 +46,40 @@ const UsersList = ({ item, currentUserId }) => {
     }
   };
 
+  const getFollowButtonText = () => {
+    if (isFollowing) return "Following";
+   if (item?.isPrivate) return "Private";
+
+   if (item?.following?.includes(currentUser?._id)) return "Follow Back";
+    return "Follow";
+  };
+  
+
   return (
-    <View className="bg-orange-300 p-2 mb-3 rounded-lg flex-row items-center">
-      <Link
-        href={ `/user/${item._id}`}
-        asChild
-      >
+    <View className="bg-gray-200 p-1 mb-3 rounded-lg flex-row items-center">
+      <Link href={`/user/${item._id}`} asChild>
         <View className="flex-1 flex-row gap-1 items-center">
-          <Image
+        <Image
             source={{ uri: item?.avatar?.cloudinary || imagePath?.user }}
-            className="h-12 w-12 bg-gray-300 rounded-full"
+            className="h-14 w-14 bg-gray-300 rounded-full"
             resizeMode="contain"
           />
+        
+          
           <Text className="text-black text-lg font-medium">
             {item.username}
           </Text>
+        
+           
         </View>
       </Link>
 
       <View className="w-32">
         <ButtonComp
-          title={isFollowing ? "Following" : "Follow"}
+          title={getFollowButtonText()}
           onPress={isFollowing ? handleUnfollow : handleFollow}
+          style={{height:40}}
+         
         />
       </View>
     </View>

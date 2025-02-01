@@ -21,7 +21,9 @@ const follow = async (req, res) => {
       await User.findByIdAndUpdate(selectedUserId, {
         $addToSet: { receivedFollowRequests: currentUserId },
       });
-      return res.status(200).json({ message: "Follow request sent successfully." });
+      return res
+        .status(200)
+        .json({ message: "Follow request sent successfully." });
     } else {
       await User.findByIdAndUpdate(currentUserId, {
         $addToSet: { following: selectedUserId },
@@ -31,7 +33,12 @@ const follow = async (req, res) => {
       });
 
       const updatedUser = await User.findById(currentUserId);
-      return res.status(200).json({ message: "You are now following the user.", user: updatedUser });
+      return res
+        .status(200)
+        .json({
+          message: "You are now following the user.",
+          user: updatedUser,
+        });
     }
   } catch (error) {
     console.error("Error in follow operation:", error);
@@ -47,97 +54,133 @@ const unfollow = async (req, res) => {
   }
 
   try {
-    await User.findByIdAndUpdate(targetUserId, {
-      $pull: { followers: currentUserId },
-    });
+    const targetUser = await User.findById(targetUserId);
+    if (!targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    await User.findByIdAndUpdate(currentUserId, {
-      $pull: { following: targetUserId },
-    });
+    if (targetUser?.isPrivate) {
+      // If the user is private, remove the follow request instead of unfollowing
+      await User.findByIdAndUpdate(targetUserId, {
+        $pull: { receivedFollowRequests: currentUserId },
+      });
 
-    const updatedUser = await User.findById(currentUserId);
-    res.status(200).json({ message: "Unfollowed successfully", user: updatedUser });
+      await User.findByIdAndUpdate(currentUserId, {
+        $pull: { sentFollowRequests: targetUserId },
+      });
+
+      await User.findByIdAndUpdate(targetUserId, {
+        $pull: { followers: currentUserId }, // Remove the current user from the target user's followers list
+      });
+
+      await User.findByIdAndUpdate(currentUserId, {
+        $pull: { following: targetUserId }, // Remove the target user from the current user's following list
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Unfollowed private user successfully" });
+
+      return res
+        .status(200)
+        .json({ message: "Follow request canceled successfully." });
+    } else {
+      // If the user is public, proceed with normal unfollowing
+      await User.findByIdAndUpdate(targetUserId, {
+        $pull: { followers: currentUserId },
+      });
+
+      await User.findByIdAndUpdate(currentUserId, {
+        $pull: { following: targetUserId },
+      });
+
+      const updatedUser = await User.findById(currentUserId);
+      return res
+        .status(200)
+        .json({ message: "Unfollowed successfully", user: updatedUser });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error in unfollowing user" });
   }
 };
 
-
-
+// Approve Follow Request
 const approveFollowRequest = async (req, res) => {
   const { currentUserId, senderUserId } = req.body;
 
+  if (!currentUserId || !senderUserId) {
+    return res.status(400).json({ message: "Both user IDs are required." });
+  }
+
   try {
-    // Remove from receivedFollowRequests
+    // Remove follow request
     await User.findByIdAndUpdate(currentUserId, {
       $pull: { receivedFollowRequests: senderUserId },
-    });
-
-    // Remove from sentFollowRequests
-    await User.findByIdAndUpdate(senderUserId, {
-      $pull: { sentFollowRequests: currentUserId },
-    });
-
-    // Add to followers and following
-    await User.findByIdAndUpdate(currentUserId, {
       $addToSet: { followers: senderUserId },
     });
 
     await User.findByIdAndUpdate(senderUserId, {
+      $pull: { sentFollowRequests: currentUserId },
       $addToSet: { following: currentUserId },
     });
 
-    res.status(200).json({ message: "Follow request approved" });
+    return res.status(200).json({ message: "Follow request approved." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error in approving follow request" });
+    console.error("Error approving follow request:", error);
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
+// Deny Follow Request
 const denyFollowRequest = async (req, res) => {
   const { currentUserId, senderUserId } = req.body;
 
+  if (!currentUserId || !senderUserId) {
+    return res.status(400).json({ message: "Both user IDs are required." });
+  }
+
   try {
-    // Remove from receivedFollowRequests
     await User.findByIdAndUpdate(currentUserId, {
       $pull: { receivedFollowRequests: senderUserId },
     });
 
-    // Remove from sentFollowRequests
     await User.findByIdAndUpdate(senderUserId, {
       $pull: { sentFollowRequests: currentUserId },
     });
 
-    res.status(200).json({ message: "Follow request denied" });
+    return res.status(200).json({ message: "Follow request denied." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error in denying follow request" });
+    console.error("Error denying follow request:", error);
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
 // /profile/:userId
-const userProfile =  async (req, res) => {
+const userProfile = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const { userId } = req.params;
 
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({  success: false ,message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    return res.status(200).json({success: true , user:user });
+    return res.status(200).json({ success: true, user: user });
   } catch (error) {
-    res.status(500).json({ success: false , message: "Error while getting the profile" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error while getting the profile" });
   }
 };
-
 
 // /profile/:userId/set-privacy
 const userPrivacy = async (req, res) => {
   // const { userId } = req.params;
-  const { isPrivate,userId  } = req.body;
+  const { isPrivate, userId } = req.body;
 
   if (!userId || typeof isPrivate !== "boolean") {
     return res.status(400).json({
@@ -172,9 +215,11 @@ const userPrivacy = async (req, res) => {
   }
 };
 
-
-
-
-
-
-module.exports = { follow, unfollow, approveFollowRequest, denyFollowRequest,userProfile  ,userPrivacy};
+module.exports = {
+  follow,
+  unfollow,
+  approveFollowRequest,
+  denyFollowRequest,
+  userProfile,
+  userPrivacy,
+};

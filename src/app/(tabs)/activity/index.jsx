@@ -7,8 +7,12 @@ import { checkAuth } from "../../../provider/auth";
 import { getAllUsers } from "../../../provider/userAllApi";
 import ActiveMain from "../../../components/activeScreen/ActiveMain";
 
+
+
 export default () => {
-  const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, user, isLoading } = useSelector(
+    (state) => state.auth
+  );
   const [users, setUsers] = useState([]);
 
   const dispatch = useDispatch();
@@ -47,8 +51,8 @@ export default () => {
   }
 
   return (
-    <SafeAreaView className="flex-1"> 
-      <ActiveMain  users={users}   currentUserId={ user?._id} />
+    <SafeAreaView className="flex-1">
+      <ActiveMain users={users} currentUser={user} />
     </SafeAreaView>
   );
 };

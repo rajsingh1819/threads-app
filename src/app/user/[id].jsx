@@ -152,13 +152,7 @@ const User = () => {
           </View>
         </View>
 
-        {/* Navigation Tabs */}
-
-        {/* {
-          
-     user?.isPrivate &&
-        } */}
-
+       
         {user?.isPrivate ? (
           <View className=" flex-1 items-center justify-center">
             <Text>

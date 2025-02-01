@@ -4,31 +4,62 @@ import UsersList from "./UsersList";
 import RequestScreen from "./RequestScreen";
 import Notification from "./Notification";
 
-const ActiveMain = ({ users, currentUserId }) => {
+const ActiveMain = ({ users, currentUser }) => {
   const [activeScreen, setActiveScreen] = useState("Users");
 
   // Switch button
   const switchScreen = (screen) => setActiveScreen(screen);
 
   // Filter users who have no follow requests
-  const filteredUsers = users.filter(
-    (item) =>
-      item.receivedFollowRequests.length === 0 &&
-      item.sentFollowRequests.length === 0
-  );
 
   const RenderScreen = () => {
     switch (activeScreen) {
       case "Users":
+        // ✅ Exclude users who sent a request to currentUser (shown in "Request" screen)
+        const filteredUsers = users.filter(
+          (user) =>
+            !user.receivedFollowRequests?.includes(currentUser?._id) && 
+            !user.sentFollowRequests?.includes(currentUser?._id) 
+        );
+      
         return (
           <View className="flex-1">
-            {filteredUsers.length > 0 ? (
+            {filteredUsers?.length > 0 ? (
               <FlatList
                 data={filteredUsers}
                 keyExtractor={(item, index) => index.toString()} // Unique key for each item
                 renderItem={({ item }) => (
-                  <UsersList item={item} currentUserId={currentUserId} />
-                )} // Corrected `item` usage
+                  <UsersList item={item} currentUser={currentUser} />
+                )}
+              />
+            ) : (
+              <Text style={{ textAlign: "center", color: "gray", marginTop: 20 }}>
+                No users found.
+              </Text>
+            )}
+          </View>
+        );
+      
+      case "Request":
+        const filteredRequestUsers = users.filter((user) =>
+          user.sentFollowRequests?.includes(currentUser?._id) ||
+           user.receivedFollowRequests?.includes(currentUser?._id)
+        );
+
+         // ✅ Only show users who sent a follow request to the current user
+  // const filteredRequestUsers = users.filter((user) =>
+  //   user.receivedFollowRequests?.includes(currentUser?._id)
+  // );
+
+        return (
+          <View className="flex-1">
+            {filteredRequestUsers?.length > 0 ? (
+              <FlatList
+                data={filteredRequestUsers}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => (
+                  <RequestScreen item={item} currentUser={currentUser} />
+                )}
               />
             ) : (
               <Text
@@ -39,10 +70,9 @@ const ActiveMain = ({ users, currentUserId }) => {
             )}
           </View>
         );
-      case "Request":
-        return <RequestScreen items={users} currentUserId={currentUserId} />;
+
       case "Notify":
-        return <Notification items={users} currentUserId={currentUserId} />;
+        return <Notification items={users} currentUser={currentUser} />;
       default:
         return null;
     }
