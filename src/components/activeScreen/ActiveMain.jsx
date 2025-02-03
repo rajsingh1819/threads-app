@@ -4,7 +4,7 @@ import UsersList from "./UsersList";
 import RequestScreen from "./RequestScreen";
 import Notification from "./Notification";
 
-const ActiveMain = ({ users, currentUser }) => {
+const ActiveMain = ({ users, currentUser,fetchUsers }) => {
   const [activeScreen, setActiveScreen] = useState("Users");
 
   // Switch button
@@ -29,7 +29,7 @@ const ActiveMain = ({ users, currentUser }) => {
                 data={filteredUsers}
                 keyExtractor={(item, index) => index.toString()} // Unique key for each item
                 renderItem={({ item }) => (
-                  <UsersList item={item} currentUser={currentUser} />
+                  <UsersList item={item} currentUser={currentUser} fetchUser={fetchUsers }  />
                 )}
               />
             ) : (
@@ -46,10 +46,7 @@ const ActiveMain = ({ users, currentUser }) => {
            user.receivedFollowRequests?.includes(currentUser?._id)
         );
 
-         // ✅ Only show users who sent a follow request to the current user
-  // const filteredRequestUsers = users.filter((user) =>
-  //   user.receivedFollowRequests?.includes(currentUser?._id)
-  // );
+        
 
         return (
           <View className="flex-1">
@@ -58,7 +55,7 @@ const ActiveMain = ({ users, currentUser }) => {
                 data={filteredRequestUsers}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                  <RequestScreen item={item} currentUser={currentUser} />
+                  <RequestScreen item={item} currentUser={currentUser} fetchUser={fetchUsers } />
                 )}
               />
             ) : (

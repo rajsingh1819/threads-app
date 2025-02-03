@@ -4,9 +4,9 @@ import ButtonComp from "../../constant/ButtonComp";
 import imagePath from "../../constant/imagePath";
 import { Link } from "expo-router";
 import { showToast } from "../../constant/showToast";
-import { handleAccept, handleReject,UnfollowUser  } from "../../provider/userAllApi"; // Import the updated functions
+import { handleAccept, handleReject, UnfollowUser } from "../../provider/userAllApi";
 
-const RequestScreen = ({ item, currentUser }) => {
+const RequestScreen = ({ item, currentUser, fetchUser }) => { // Add fetchUser to props
   const [status, setStatus] = useState(null);
 
   const handleAcceptRequest = async () => {
@@ -15,6 +15,7 @@ const RequestScreen = ({ item, currentUser }) => {
       if (response) {
         setStatus("Accepted");
         showToast("success", "Follow request accepted");
+        fetchUser(); // Fetch updated user data
       }
     } catch (error) {
       console.error("Error accepting request:", error);
@@ -27,6 +28,7 @@ const RequestScreen = ({ item, currentUser }) => {
       if (response) {
         setStatus("Rejected");
         showToast("info", "Follow request rejected");
+        fetchUser(); // Fetch updated user data
       }
     } catch (error) {
       console.error("Error rejecting request:", error);
@@ -37,8 +39,9 @@ const RequestScreen = ({ item, currentUser }) => {
     try {
       const response = await UnfollowUser(currentUser?._id, item._id);
       if (response) {
-        setStatus("Cancel");
+        setStatus("Canceled");
         showToast("info", "Request canceled");
+        fetchUser(); // Fetch updated user data
       }
     } catch (error) {
       console.error("Error unfollowing user:", error);

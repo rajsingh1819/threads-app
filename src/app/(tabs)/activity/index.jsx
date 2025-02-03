@@ -1,13 +1,10 @@
 import { Text, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
-
 import React, { useEffect, useState } from "react";
 import { checkAuth } from "../../../provider/auth";
 import { getAllUsers } from "../../../provider/userAllApi";
 import ActiveMain from "../../../components/activeScreen/ActiveMain";
-
-
 
 export default () => {
   const { isAuthenticated, user, isLoading } = useSelector(
@@ -17,12 +14,14 @@ export default () => {
 
   const dispatch = useDispatch();
 
+  // Check authentication on component load
   useEffect(() => {
     if (!isAuthenticated) {
       dispatch(checkAuth());
     }
   }, [dispatch, isAuthenticated]);
 
+  // Fetch users when the current user is available
   const fetchUsers = async () => {
     try {
       const result = await getAllUsers(user?._id);
@@ -36,12 +35,14 @@ export default () => {
     }
   };
 
+  // Trigger fetching users on user load
   useEffect(() => {
     if (user) {
       fetchUsers();
     }
-  }, [user]);
+  }, [user]); // This will ensure the fetch is triggered when the user is available
 
+  // Loading state
   if (isLoading || !user) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -52,7 +53,7 @@ export default () => {
 
   return (
     <SafeAreaView className="flex-1">
-      <ActiveMain users={users} currentUser={user} />
+      <ActiveMain users={users} currentUser={user} fetchUsers={fetchUsers} />
     </SafeAreaView>
   );
 };

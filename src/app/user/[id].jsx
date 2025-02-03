@@ -8,58 +8,58 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-
 import { useDispatch, useSelector } from "react-redux";
-import { checkAuth, logoutUser } from "../../provider/auth";
-import { Link, router } from "expo-router";
+import { checkAuth } from "../../provider/auth";
+import { router } from "expo-router";
 import { showToast } from "../../constant/showToast";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonComp from "../../constant/ButtonComp";
 import {
   ChevronLeft,
-  Settings,
-  Lock,
   LockIcon,
-  AlignRight,
   GlobeLock,
-  AtSign,
-  BadgeCheck,
-  DollarSign,
   Globe,
   Instagram,
   Twitter,
   UserRoundCog,
-  UserCog,
   EllipsisVertical,
 } from "lucide-react-native";
-import Threads from "../../components/profileScreen/Threads";
-import Replies from "../../components/profileScreen/Replies";
-import Reposts from "../../components/profileScreen/Reposts";
 import imagePath from "../../constant/imagePath";
-import { singleUser } from "../../provider/userAllApi";
+import {
+  singleUser,
+  UnfollowUser,
+  FollowUser,
+} from "../../provider/userAllApi";
 import ProfileAction from "../../components/profileScreen/ProfileAction";
 
-{
-  /* <AlignRight />  <AtSign /> <BadgeCheck /> <DollarSign /> <Expand /> <Globe /> 
-  <GlobeLock /> <IndianRupee />
-  <Instagram /> <ShieldAlert <UserRoundCog /> <UserCog /> <Twitter /> />
-  */
-}
 const User = () => {
   const { id } = useLocalSearchParams();
-  const [user, setUser] = useState(null); // Initialize user as null
- 
+  const [userDetails, setUserDetails] = useState(null);
+  const [isRequested, setIsRequested] = useState(false);
+
+  const { isAuthenticated, user, isLoading } = useSelector(
+    (state) => state.auth
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      dispatch(checkAuth());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const fetchUser = async () => {
     const result = await singleUser(id);
     if (result.success) {
-      const fetchedUser = result?.user || {};
-      console.log("result", result);
-      setUser(fetchedUser); // Set user after fetching
+      setUserDetails(result?.user || {});
+
+      if (result.user?.receivedFollowRequests?.includes(user._id)) {
+        setIsRequested(true);
+      } else {
+        setIsRequested(false);
+      }
     } else {
       showToast("error", `${result.message}` || "Something went wrong");
-      console.error(result.message);
     }
   };
 
@@ -67,17 +67,17 @@ const User = () => {
     fetchUser();
   }, [id]);
 
-   if (!user || !user._id) {
-      return (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size={30} />
-          <Text>Loading user data...</Text>
-        </View>
-      );
-    }
-    
+  if (!user || !userDetails?._id) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size={30} />
+        <Text>Loading user data...</Text>
+      </View>
+    );
+  }
 
-  
+  const isFollowing = userDetails?.followers?.includes(user._id);
+
   const handleBackPress = () => {
     if (router.canGoBack()) {
       router.back();
@@ -86,49 +86,85 @@ const User = () => {
     }
   };
 
+  const handleFollow = async () => {
+    try {
+      const result = await FollowUser(user._id, userDetails._id);
+      if (result) {
+        if (userDetails?.isPrivate) {
+          setIsRequested(true);
+        } else {
+          showToast("success", "Followed successfully!");
+        }
+        fetchUser();
+      }
+    } catch (error) {
+      showToast("error", "Failed to follow the user.");
+    }
+  };
+
+  const handleFollowing = async () => {
+    try {
+      const result = await UnfollowUser(user._id, userDetails._id);
+      if (result) {
+        if (isRequested) {
+          showToast("success", "Follow request canceled successfully!");
+          setIsRequested(false);
+        } else {
+          showToast("success", "Unfollowed successfully!");
+        }
+        fetchUser();
+      }
+    } catch (error) {
+      showToast("error", "Failed to update follow status.");
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 mt-5">
-      <TouchableOpacity className="flex-row" onPress={handleBackPress}>
+      {/* Back Button */}
+      <TouchableOpacity className="flex-row items-center" onPress={handleBackPress}>
         <ChevronLeft size={25} color="#000" />
-        <Text className="text-base font-semibold"> Back</Text>
+        <Text className="text-base font-semibold ml-2">Back</Text>
       </TouchableOpacity>
-      <View className="flex-1 p-1 mt-2">
-        <View className="gap-2 p-1">
-          {/* Top Section */}
-          <View className="flex-row justify-between items-center">
-            {user?.isPrivate ? <GlobeLock size={35} /> : <Globe size={35} />}
 
+      <View className="flex-1 p-1 mt-2">
+        {/* Header Section */}
+        <View className="gap-2 p-1">
+          <View className="flex-row justify-between items-center">
+            {userDetails?.isPrivate ? (
+              <GlobeLock size={35} />
+            ) : (
+              <Globe size={35} />
+            )}
             <View className="flex-row space-x-3">
               <Instagram size={30} />
               <Twitter size={30} />
-
               <EllipsisVertical size={30} fill="black" />
             </View>
           </View>
 
-          {/* User Info */}
+          {/* User Info Section */}
           <View className="flex flex-row justify-between items-center">
             <View>
               <Text className="text-2xl font-bold">
-                {user?.username || "unknown"}
+                {userDetails?.username || "Unknown"}
               </Text>
-              <View className="flex-row items-center gap-1">
-                <AtSign size={15} />
-                <Text className="text-sm font-medium">
-                  {user?.username?.toLowerCase() || "unknown"}
-                </Text>
-              </View>
+              <Text className="text-sm font-medium text-gray-500">
+                @{userDetails?.username?.toLowerCase() || "unknown"}
+              </Text>
             </View>
             <View
               className={`w-16 h-16 flex items-center justify-center ${
-                !user?.image && "bg-gray-400"
+                !userDetails?.avatar && "bg-gray-400"
               } rounded-full`}
             >
-              {!user?.avatar ? (
+              {!userDetails?.avatar ? (
                 <UserRoundCog size={40} fill="black" />
               ) : (
                 <Image
-                  source={{ uri: user?.avatar?.cloudinary || imagePath?.user }}
+                  source={{
+                    uri: userDetails?.avatar?.cloudinary || imagePath?.user,
+                  }}
                   className="w-16 h-16 rounded-full"
                   resizeMode="contain"
                 />
@@ -136,33 +172,45 @@ const User = () => {
             </View>
           </View>
 
-          {/* Followers */}
+          {/* Followers Count */}
           <Text className="text-base font-semibold text-gray-400">
-            {user?.followers?.length || "0"} followers
+            {userDetails?.followers?.length || "0"} followers
           </Text>
 
-          {/* Buttons */}
-          <View className="flex-row items-center justify-center gap-2 ">
+          {/* Follow & Share Buttons */}
+          <View className="flex-row items-center justify-center gap-2">
+            {isFollowing ? (
+              <Pressable
+                onPress={handleFollowing}
+                className="flex-1 items-center p-2 border border-black rounded-xl"
+              >
+                <Text>Following</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={isRequested ? handleFollowing : handleFollow}
+                className="flex-1 items-center p-2 border border-black rounded-xl"
+              >
+                <Text>{isRequested ? "Cancel Request" : "Follow"}</Text>
+              </Pressable>
+            )}
+
             <Pressable className="flex-1 items-center p-2 border border-black rounded-xl">
-              <Text>follow</Text>
-            </Pressable>
-            <Pressable className="flex-1 items-center p-2 border border-black rounded-xl">
-              <Text>Share </Text>
+              <Text>Share</Text>
             </Pressable>
           </View>
         </View>
 
-       
-        {user?.isPrivate ? (
-          <View className=" flex-1 items-center justify-center">
-            <Text>
+        {/* Show Profile Content or Lock Icon */}
+        {userDetails?.isPrivate && !isFollowing ? (
+          <View className="flex-1 items-center justify-center">
             <LockIcon size={200} />
+            <Text className="text-lg font-semibold mt-2">
+              This account is private
             </Text>
           </View>
         ) : (
-         
-          <ProfileAction user={user}/>
-         
+          <ProfileAction user={userDetails}  />
         )}
       </View>
     </SafeAreaView>
