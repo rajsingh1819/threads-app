@@ -1,5 +1,5 @@
-import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, router } from "expo-router";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -10,10 +10,8 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "../../provider/auth";
-import { router } from "expo-router";
 import { showToast } from "../../constant/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ButtonComp from "../../constant/ButtonComp";
 import {
   ChevronLeft,
   LockIcon,
@@ -31,15 +29,15 @@ import {
   FollowUser,
 } from "../../provider/userAllApi";
 import ProfileAction from "../../components/profileScreen/ProfileAction";
+import HeaderBack from "../../constant/HeaderBack";
+import AvatarView from "../../util/AvatarView";
 
 const User = () => {
   const { id } = useLocalSearchParams();
   const [userDetails, setUserDetails] = useState(null);
   const [isRequested, setIsRequested] = useState(false);
-
-  const { isAuthenticated, user, isLoading } = useSelector(
-    (state) => state.auth
-  );
+  
+  const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,24 +46,24 @@ const User = () => {
     }
   }, [dispatch, isAuthenticated]);
 
-  const fetchUser = async () => {
-    const result = await singleUser(id);
-    if (result.success) {
-      setUserDetails(result?.user || {});
-
-      if (result.user?.receivedFollowRequests?.includes(user._id)) {
-        setIsRequested(true);
+  // Fetch User Details
+  const fetchUser = useCallback(async () => {
+    try {
+      const result = await singleUser(id);
+      if (result.success) {
+        setUserDetails(result?.user || {});
+        setIsRequested(result.user?.receivedFollowRequests?.includes(user?._id) || false);
       } else {
-        setIsRequested(false);
+        showToast("error", result.message || "Something went wrong");
       }
-    } else {
-      showToast("error", `${result.message}` || "Something went wrong");
+    } catch (error) {
+      showToast("error", "Failed to fetch user data.");
     }
-  };
+  }, [id, user?._id]);
 
   useEffect(() => {
     fetchUser();
-  }, [id]);
+  }, [fetchUser]);
 
   if (!user || !userDetails?._id) {
     return (
@@ -76,22 +74,25 @@ const User = () => {
     );
   }
 
-  const isFollowing = userDetails?.followers?.includes(user._id);
+ 
+  
+  
 
+ 
+
+  // Navigate back
   const handleBackPress = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.push("/(tabs)");
-    }
+    router.canGoBack() ? router.back() : router.push("/(tabs)");
   };
 
+  // Handle Follow Action
   const handleFollow = async () => {
     try {
       const result = await FollowUser(user._id, userDetails._id);
       if (result) {
         if (userDetails?.isPrivate) {
           setIsRequested(true);
+          showToast("success", "Follow request sent!");
         } else {
           showToast("success", "Followed successfully!");
         }
@@ -102,16 +103,13 @@ const User = () => {
     }
   };
 
-  const handleFollowing = async () => {
+  // Handle Unfollow Action
+  const handleUnfollow = async () => {
     try {
       const result = await UnfollowUser(user._id, userDetails._id);
       if (result) {
-        if (isRequested) {
-          showToast("success", "Follow request canceled successfully!");
-          setIsRequested(false);
-        } else {
-          showToast("success", "Unfollowed successfully!");
-        }
+        setIsRequested(false);
+        showToast("success", isRequested ? "Follow request canceled!" : "Unfollowed successfully!");
         fetchUser();
       }
     } catch (error) {
@@ -119,23 +117,23 @@ const User = () => {
     }
   };
 
-  return (
-    <SafeAreaView className="flex-1 mt-5">
-      {/* Back Button */}
-      <TouchableOpacity className="flex-row items-center" onPress={handleBackPress}>
-        <ChevronLeft size={25} color="#000" />
-        <Text className="text-base font-semibold ml-2">Back</Text>
-      </TouchableOpacity>
 
-      <View className="flex-1 p-1 mt-2">
+  
+  const isFollowing = userDetails?.followers?.some(
+    (follower) => String(follower._id) === String(user._id)
+  );
+
+  return (
+    <SafeAreaView className="flex-1">
+       <View className="flex-1 items-center mt-2">
+       <View className="w-full sm:w-1/2 flex-1">
+       <HeaderBack  onPress={handleBackPress} />
+
+      <View className="flex-1 p-2">
         {/* Header Section */}
         <View className="gap-2 p-1">
           <View className="flex-row justify-between items-center">
-            {userDetails?.isPrivate ? (
-              <GlobeLock size={35} />
-            ) : (
-              <Globe size={35} />
-            )}
+            {userDetails?.isPrivate ? <GlobeLock size={35} /> : <Globe size={35} />}
             <View className="flex-row space-x-3">
               <Instagram size={30} />
               <Twitter size={30} />
@@ -146,9 +144,7 @@ const User = () => {
           {/* User Info Section */}
           <View className="flex flex-row justify-between items-center">
             <View>
-              <Text className="text-2xl font-bold">
-                {userDetails?.username || "Unknown"}
-              </Text>
+              <Text className="text-2xl font-bold">{userDetails?.username || "Unknown"}</Text>
               <Text className="text-sm font-medium text-gray-500">
                 @{userDetails?.username?.toLowerCase() || "unknown"}
               </Text>
@@ -161,13 +157,7 @@ const User = () => {
               {!userDetails?.avatar ? (
                 <UserRoundCog size={40} fill="black" />
               ) : (
-                <Image
-                  source={{
-                    uri: userDetails?.avatar?.cloudinary || imagePath?.user,
-                  }}
-                  className="w-16 h-16 rounded-full"
-                  resizeMode="contain"
-                />
+                <AvatarView avatarUri={userDetails?.avatar?.cloudinary} size="lg" />
               )}
             </View>
           </View>
@@ -181,14 +171,14 @@ const User = () => {
           <View className="flex-row items-center justify-center gap-2">
             {isFollowing ? (
               <Pressable
-                onPress={handleFollowing}
+                onPress={handleUnfollow}
                 className="flex-1 items-center p-2 border border-black rounded-xl"
               >
                 <Text>Following</Text>
               </Pressable>
             ) : (
               <Pressable
-                onPress={isRequested ? handleFollowing : handleFollow}
+                onPress={isRequested ? handleUnfollow : handleFollow}
                 className="flex-1 items-center p-2 border border-black rounded-xl"
               >
                 <Text>{isRequested ? "Cancel Request" : "Follow"}</Text>
@@ -201,18 +191,21 @@ const User = () => {
           </View>
         </View>
 
-        {/* Show Profile Content or Lock Icon */}
+        {/* Show Profile Content or Lock Icon for Private Accounts */}
         {userDetails?.isPrivate && !isFollowing ? (
           <View className="flex-1 items-center justify-center">
             <LockIcon size={200} />
-            <Text className="text-lg font-semibold mt-2">
-              This account is private
-            </Text>
+            <Text className="text-lg font-semibold mt-2">This account is private</Text>
           </View>
         ) : (
-          <ProfileAction user={userDetails}  />
+          <ProfileAction user={userDetails} />
         )}
       </View>
+       </View>
+       </View>
+
+      {/* Back Button */}
+     
     </SafeAreaView>
   );
 };

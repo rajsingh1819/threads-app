@@ -1,15 +1,16 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
+const { uploadPostImage, savePostImageLocally } = require("../util/uploadPostImage");
 
 const createPost = async (req, res) => {
   try {
-    const { content, userId } = req.body;
+    const { content, userId, image } = req.body;
 
-    // Validate input
-    if (!content || !userId) {
+    // Validate input - Either content or image should be provided, not both
+    if (!content && !image) {
       return res.status(400).json({
         success: false,
-        message: "Content and User ID are required",
+        message: "Either content or image is required",
       });
     }
 
@@ -22,13 +23,31 @@ const createPost = async (req, res) => {
       });
     }
 
-    // Save post to the database
-    const newPost = new Post({ user: userId, content });
+    let imageUrl = {}; // Change from `null` to an object
+
+    if (image) {
+      // Upload image to Cloudinary & save locally
+      const cloudinaryUrl = await uploadPostImage(image, userId);
+      const localPath = await savePostImageLocally(image, userId);
+
+      // Store image URLs in an object
+      imageUrl = { cloudinary: cloudinaryUrl, local: localPath };
+    }
+
+    // Create new post - Fix field name to `images`
+    const newPost = new Post({
+      user: userId,
+      content: content || "", // If content is not provided, an empty string is stored
+      images: imageUrl, // ✅ Fixed: Using `images` instead of `image`
+    });
+
+    // Save post to database
     await newPost.save();
 
     res.status(201).json({
       success: true,
       message: "Post created successfully",
+      post: newPost,
     });
   } catch (error) {
     console.error("Error creating post:", error.message || error);
@@ -38,6 +57,13 @@ const createPost = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
 
 const getSinglePost = async (req, res) => {
   const { postId } = req.params;

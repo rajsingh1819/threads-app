@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, View, Text, TouchableOpacity } from "react-native";
+import { Image, View, Text, TouchableOpacity, Pressable } from "react-native";
 import {
   Heart,
   MessageCircle,
@@ -12,11 +12,14 @@ import { formatDistanceToNow } from "date-fns";
 import { handleLikeToggle } from "../../util/handleIconAsction";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
+import ImageView from "../../util/ImageView";
+
 
 const PostSingleList = ({ item, onMessageIconPress, action }) => {
   const { user } = useSelector((state) => state.auth);
   const [showMore, setShowMore] = useState(false);
   const [postItem, setPostItem] = useState(item);
+ 
 
   const isLiked = postItem?.likes?.includes(user?._id);
   const result =
@@ -71,7 +74,7 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
               <Text className="text-slate-800">
                 {formatDistanceToNow(new Date(postItem?.createdAt), {
                   addSuffix: true,
-                })} 
+                })}
               </Text>
               {user?._id === postItem?.user?._id && (
                 <TouchableOpacity>
@@ -82,16 +85,24 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
           </View>
 
           {/* Post Content */}
-          <Text className="text-gray-800">
-            {showMore ? postItem?.content : postItem?.content?.slice(0, 100)}
-            {postItem?.content?.length > 100 && (
-              <TouchableOpacity onPress={() => setShowMore(!showMore)}>
-                <Text className="text-blue-500 font-semibold">
-                  {showMore ? " Show Less" : " Show More"}
-                </Text>
-              </TouchableOpacity>
+          <View className="gap-3">
+            <Text className="text-gray-800">
+              {showMore ? postItem?.content : postItem?.content?.slice(0, 100)}
+              {postItem?.content?.length > 100 && (
+                <TouchableOpacity onPress={() => setShowMore(!showMore)}>
+                  <Text className="text-blue-500 font-semibold">
+                    {showMore ? " Show Less" : " Show More"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </Text>
+
+            {postItem?.images?.cloudinary && (
+              
+             <ImageView imageUri={postItem?.images?.cloudinary} className="w-36 h-32 rounded-lg" />
+
             )}
-          </Text>
+          </View>
 
           {/* Action Buttons */}
           <View className="flex-row gap-6 mt-2">
@@ -137,6 +148,7 @@ const PostSingleList = ({ item, onMessageIconPress, action }) => {
           </View>
         </View>
       </View>
+    
     </View>
   );
 };

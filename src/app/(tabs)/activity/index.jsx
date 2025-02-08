@@ -53,7 +53,13 @@ export default () => {
 
   return (
     <SafeAreaView className="flex-1">
+       <View className="flex-1 items-center">
+       <View className="w-full sm:w-1/2 flex-1">
       <ActiveMain users={users} currentUser={user} fetchUsers={fetchUsers} />
+
+       </View>
+       </View>
+
     </SafeAreaView>
   );
 };

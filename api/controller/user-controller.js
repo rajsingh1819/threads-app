@@ -33,12 +33,10 @@ const follow = async (req, res) => {
       });
 
       const updatedUser = await User.findById(currentUserId);
-      return res
-        .status(200)
-        .json({
-          message: "You are now following the user.",
-          user: updatedUser,
-        });
+      return res.status(200).json({
+        message: "You are now following the user.",
+        user: updatedUser,
+      });
     }
   } catch (error) {
     console.error("Error in follow operation:", error);
@@ -161,7 +159,9 @@ const userProfile = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId)
+      .populate("followers", "username avatar")
+      .sort({ createdAt: -1 });
 
     if (!user) {
       return res

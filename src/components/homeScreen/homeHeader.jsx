@@ -12,12 +12,12 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "../../provider/auth";
+import AvatarView from "../../util/AvatarView";
+
 
 const HomeHeader = () => {
- 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  // console.log(user)
   
   useEffect(() => {
     dispatch(checkAuth());
@@ -34,16 +34,10 @@ const HomeHeader = () => {
         />
       </View>
 
-      <View className="flex-row  bg-white p-1 pt-5 pb-5  gap-3 rounded-lg border
-       border-slate-300 ">
-        {/* User Avatar */}
-       
-       <Image
-          source={{ uri:  user?.avatar?.cloudinary || imagePath?.user}}
-          className="h-12 w-12 rounded-full"
-          resizeMode="contain"
-        />
-      
+      <View className="flex-row bg-white p-1 pt-5 pb-5 gap-3 rounded-lg border border-slate-300">
+        {/* User Avatar (Replaced with AvatarView Component) */}
+        <AvatarView avatarUri={user?.avatar?.cloudinary} size="md" /> 
+        
         <Pressable className="flex-1" onPress={() => router.push("/post")}>
           <Text className="text-lg font-bold text-gray-800">
             {user?.username || "Unknown"}
@@ -59,8 +53,6 @@ const HomeHeader = () => {
           </View>
         </Pressable>
       </View>
-
-      {/* Icon Section */}
     </View>
   );
 };

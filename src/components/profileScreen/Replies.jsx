@@ -8,7 +8,7 @@ const Replies = ({ posts}) => {
   if (!posts || posts.length === 0) {
     return (
       <View style={{ padding: 10 }}>
-        <Text>No posts available.</Text>
+        <Text>No Replies available.</Text>
       </View>
     );
   }

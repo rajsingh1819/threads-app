@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const OpenUserPost = () => {
+const UpdateProfile = () => {
   return (
     <View>
-      <Text>OpenUserPost</Text>
+      <Text>UpdateProfile</Text>
     </View>
   );
 };
 
-export default OpenUserPost;
+export default UpdateProfile;

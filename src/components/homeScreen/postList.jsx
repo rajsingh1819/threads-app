@@ -12,19 +12,23 @@ import { formatDistanceToNow } from "date-fns";
 import { router } from "expo-router";
 import { handleLikeToggle } from "../../util/handleIconAsction";
 import { useSelector } from "react-redux";
+import ImageView from "../../util/ImageView";
+
 const PostList = ({ item, action }) => {
+  const [postItem, setPostItem] = useState(item);
   const { user } = useSelector((state) => state.auth);
   const [showMore, setShowMore] = useState(false);
-  const [postItem, setPostItem] = useState(item);
 
   const isLiked = postItem?.likes?.includes(user?._id);
 
+  
+  // handle like and dislike function
   const handleHeart = async () => {
     await handleLikeToggle(postItem, action, user, setPostItem);
   };
 
   return (
-    <View className="p-2 border-b-2 border-slate-400">
+    <View className="p-2 border-b-2 border-gray-300">
       {/* User Info */}
       <View className="flex-row pb-1 mb-2 gap-2 ">
         <TouchableOpacity
@@ -36,7 +40,9 @@ const PostList = ({ item, action }) => {
           }
         >
           <Image
-            source={{ uri: postItem?.user?.avatar?.cloudinary  || imagePath?.user }}
+            source={{
+              uri: postItem?.user?.avatar?.cloudinary || imagePath?.user,
+            }}
             className="h-10 w-10 rounded-full"
             resizeMode="contain"
           />
@@ -56,35 +62,38 @@ const PostList = ({ item, action }) => {
                   {postItem?.user?.username || "Unknown"}
                 </Text>
               </TouchableOpacity>
-            
             </View>
             <View className="flex-row items-center gap-2">
-            <Text className="text-slate-800">
+              <Text className="text-slate-800">
                 {formatDistanceToNow(new Date(postItem?.createdAt), {
                   addSuffix: true,
                 })}
               </Text>
               {user?._id === postItem?.user?._id && (
-              <TouchableOpacity>
-                <Ellipsis size={25} />
-              </TouchableOpacity>
-            )}
-
+                <TouchableOpacity>
+                  <Ellipsis size={25} />
+                </TouchableOpacity>
+              )}
             </View>
-           
           </View>
 
           {/* Post Content */}
-          <Text className="text-gray-800">
-            {showMore ? postItem?.content : postItem?.content?.slice(0, 100)}
-            {postItem?.content?.length > 100 && (
-              <TouchableOpacity onPress={() => setShowMore(!showMore)}>
-                <Text className="text-blue-500 font-semibold">
-                  {showMore ? " Show Less" : " Show More"}
-                </Text>
-              </TouchableOpacity>
+          <View className="gap-3">
+            <Text className="text-gray-800">
+              {showMore ? postItem?.content : postItem?.content?.slice(0, 100)}
+              {postItem?.content?.length > 100 && (
+                <TouchableOpacity onPress={() => setShowMore(!showMore)}>
+                  <Text className="text-blue-500 font-semibold">
+                    {showMore ? " Show Less" : " Show More"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </Text>
+
+            {postItem?.images?.cloudinary && (
+              <ImageView imageUri={postItem?.images?.cloudinary} />
             )}
-          </Text>
+          </View>
 
           {/* Action Buttons */}
           <View className="flex-row gap-6 mt-2">

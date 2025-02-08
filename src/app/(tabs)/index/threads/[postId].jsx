@@ -84,41 +84,47 @@ const UserComments = () => {
 
   return (
     <SafeAreaView className="flex-1">
-      <HeaderBack title="Threads" onPress={handleBackPress} />
+      <View className="flex-1 items-center">
+        <View className="w-full sm:w-1/2 flex-1">
+          <HeaderBack title="Threads" onPress={handleBackPress} />
 
-      <KeyboardAvoidingView className="flex-1">
-        <View className="p-1 mb-3 mt-3 flex-1">
-          <PostSingleList item={userItem} action={"post"} />
+          <View className="flex-1">
+            <View className="p-1 mb-3 mt-3 flex-1">
+              <PostSingleList item={userItem} action={"post"} />
 
-          <View className="border-t-2 border-b-2 p-2 border-stone-400">
-            <Text className="text-base font-semibold">Replies</Text>
-          </View>
+              <View className="border-t-2 border-b-2 p-2 border-stone-400">
+                <Text className="text-base font-semibold">Replies</Text>
+              </View>
 
-          <FlatList
-            data={userItem?.comments || []}
-            keyExtractor={(comment) => comment._id}
-            renderItem={({ item }) => (
-              <Comment comment={item} postId={postId} user={user} />
-            )}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingTop: 10 }}
-          />
+              <FlatList
+                data={userItem?.comments || []}
+                keyExtractor={(comment) => comment._id}
+                renderItem={({ item }) => (
+                  <Comment comment={item} postId={postId} user={user} />
+                )}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingTop: 10 }}
+              />
 
-          <View className="flex-row gap-1 border border-slate-400 rounded-full p-2">
-            <Image
-              source={{ uri: imagePath?.user }}
-              className="h-8 w-8 rounded-full"
-              resizeMode="contain"
-            />
-            <TouchableOpacity
-              className="flex-1 justify-center bg-slate-200"
-              onPress={handleComment}
-            >
-              <Text className="ml-2">Reply To {userItem?.user?.username}</Text>
-            </TouchableOpacity>
+              <View className="flex-row gap-1 border border-slate-400 rounded-full p-2">
+                <Image
+                  source={{ uri: imagePath?.user }}
+                  className="h-8 w-8 rounded-full"
+                  resizeMode="contain"
+                />
+                <TouchableOpacity
+                  className="flex-1 justify-center bg-slate-200"
+                  onPress={handleComment}
+                >
+                  <Text className="ml-2">
+                    Reply To {userItem?.user?.username}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 };

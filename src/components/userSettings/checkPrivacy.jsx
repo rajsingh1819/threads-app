@@ -74,7 +74,7 @@ import {
    
   
     return (
-      <View className="p-2 bg-green-300">
+      <View className="p-2">
         <Text className="text-xl font-semibold mb-5">
           Change Your Account Type
         </Text>

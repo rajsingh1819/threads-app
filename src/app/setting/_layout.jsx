@@ -7,8 +7,7 @@ const PostLayout = () => {
       <Stack.Screen
         name="index"
         options={{
-          headerTitle: "New Thread",
-          presentation: "modal",
+          headerTitle: "Setting",
           headerShown: false,
         }}
       />

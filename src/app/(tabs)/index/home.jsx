@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 
 const Home = () => {
   const [postData, setPostData] = useState([]);
-  const { user } = useSelector((state) => state.auth); 
+  const { user } = useSelector((state) => state.auth);
   const [refreshing, setRefreshing] = useState(false); // For manual pull-to-refresh
 
   const fetchPost = useCallback(async () => {
@@ -22,34 +22,35 @@ const Home = () => {
         setPostData([...randomizedPosts]);
       } else {
         showToast("error", result.message || "Something went wrong");
-        // console.error(result.message);
       }
     } catch (error) {
       showToast("error", "Failed to fetch posts");
-      // console.error("Error fetching posts:", error);
     } finally {
       setRefreshing(false); // Hide refreshing indicator
     }
   }, []);
 
-  
   useEffect(() => {
     fetchPost();
-  }, [user, fetchPost]); 
+  }, [user, fetchPost]);
+
+    
 
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-1 p-1">
-        <HomeHeader  />
-        <FlatList
-          data={postData}
-          keyExtractor={(item) => item.id || item._id}
-          renderItem={({ item }) => <PostList item={item} action="post" />}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 10 }}
-          refreshing={refreshing} // Pull-to-refresh indicator
-          onRefresh={fetchPost} // Trigger fetchPost on pull-to-refresh
-        />
+      <View className="flex-1 items-center">
+        <View className="w-full sm:w-1/2 flex-1">
+          <HomeHeader />
+          <FlatList
+            data={postData}
+            keyExtractor={(item) => item.id || item._id}
+            renderItem={({ item }) => <PostList item={item} action="post" />}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }} // Ensures scrolling
+            refreshing={refreshing} // Pull-to-refresh indicator
+            onRefresh={fetchPost} // Trigger fetchPost on pull-to-refresh
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -33,6 +33,7 @@ export const registerUser = createAsyncThunk(
       }
       return data;
     } catch (error) {
+      showToast("error", `${error.message}`|| "User already registered!");
       return rejectWithValue(error.message);
     }
   }

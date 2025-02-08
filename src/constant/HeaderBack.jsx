@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react-native";
 
 const HeaderBack = ({ title, onPress, icon, cancel }) => {
   return (
-    <View className="flex-row items-center py-2 px-1">
+    <View className="flex-row items-center py-2 ">
       {/* Back Button */}
       <TouchableOpacity
         className="flex-row items-center flex-[0.4] "

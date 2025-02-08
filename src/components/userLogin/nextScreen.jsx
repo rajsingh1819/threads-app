@@ -13,7 +13,10 @@ import { showToast } from "../../constant/showToast";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../../provider/auth";
 import { router } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
+import { pickImage } from "../../util/mediaPicker";
+// import * as ImagePicker from "expo-image-picker";
+
+
 
 const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
   const dispatch = useDispatch();
@@ -26,24 +29,10 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
     setUserData({ ...userData, username: "", password: "" });
   };
 
-  const pickImage = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 4],
-        quality: 0.5,
-      });
-      if (!result.canceled && result.assets?.length) {
-        setAvatarUri(result.assets[0].uri);
-        setError(""); // Clear any previous error
-      } else {
-        setError("Image selection canceled or failed.");
-      }
-    } catch (err) {
-      setError("Error picking image: " + err.message);
-    }
-  };
+  
+  const pickAvatarImage = ()=>{
+    pickImage(setAvatarUri);
+  }
 
 
 
@@ -103,24 +92,10 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
   
   return (
     <View className="flex-1 p-2">
-      {isLoading && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(255, 255, 255, 0.75)",
-            zIndex: 50,
-          }}
-        >
+       {isLoading && (
+        <View className="absolute inset-0 flex items-center justify-center bg-white/10 z-50">
           <ActivityIndicator size={30} color="blue" />
-          <Text style={{ marginTop: 10, fontSize: 16, fontWeight: "bold" }}>
-            Registering user...
-          </Text>
+          <Text className="mt-2 text-lg font-bold"> Registering user...</Text>
         </View>
       )}
 
@@ -135,7 +110,7 @@ const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
 
       <View className="flex-1 gap-10">
         <View className="items-center gap-1">
-          <TouchableOpacity onPress={pickImage}>
+          <TouchableOpacity onPress={pickAvatarImage}>
             {avatarUri ? (
               <Image
                 source={{ uri: avatarUri }}

@@ -2,7 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import React, { useState, useEffect } from "react";
 import Threads from "./Threads";
 import Replies from "./Replies";
-import Reposts from "./Reposts";
+import Media from "./Media";
 import { showToast } from "../../constant/showToast";
 import { getAllPost } from "../../provider/userAllApi";
 
@@ -62,14 +62,19 @@ const ProfileAction = ({ user }) => {
           );
         });
   
-        console.log("userRepliesPosts", userRepliesPosts);
+       
         return <Replies posts={userRepliesPosts} user={user} />;
   
-      case "Reposts":
-        return <Reposts />;
+        case "Media":
+          const userMediaThreads = postData.filter(
+            (post) =>
+              post?.user?._id === user._id && (post?.images?.cloudinary)
+          );
+          return <Media posts={userMediaThreads}  />;
+        
   
       default:
-        return <Threads posts={postData} />;
+        return <Threads post={postData}  />;
     }
   };
   
@@ -77,7 +82,7 @@ const ProfileAction = ({ user }) => {
   return (
     <View className="flex-1">
       <View className="flex-row  mt-3 justify-between gap-2 border-b border-slate-400">
-        {["Threads", "Replies", "Reposts"].map((item, index) => (
+        {["Threads", "Replies", "Media"].map((item, index) => (
           <Pressable
             key={index}
             onPress={() => switchScreen(item)}

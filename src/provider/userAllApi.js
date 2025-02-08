@@ -1,7 +1,10 @@
 import { url } from "./url";
 import { showToast } from "../constant/showToast";
 
-export const createPostApi = async ({ content, userId }) => {
+
+
+
+export const createPostApi = async ({ content, userId, image }) => {
   const api = `${url}/api/posts/create`;
 
   try {
@@ -10,7 +13,7 @@ export const createPostApi = async ({ content, userId }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ content, userId }),
+      body: JSON.stringify({ content, userId, image }), // Include image in request
     });
 
     if (!response.ok) {
@@ -30,6 +33,7 @@ export const createPostApi = async ({ content, userId }) => {
     return { success: false, message: "An unexpected error occurred" };
   }
 };
+
 
 export const getSinglePost = async ({ postId }) => {
   // Correct API endpoint
@@ -259,7 +263,7 @@ export const deleteUserPost = async (postId) => {
     console.log("delete successfully:", data);
     return data;
   } catch (error) {
-    console.error("Unexpected error:", error);
+    // console.error("Unexpected error:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -270,7 +274,7 @@ export const getAllUsers = async (userId) => {
     const response = await fetch(api, { method: "GET" });
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Users fetch error:", errorData);
+    
       return {
         success: false,
         message: errorData.message || "Failed to fetch users",
@@ -279,7 +283,7 @@ export const getAllUsers = async (userId) => {
     const data = await response.json();
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error:", error);
+    // console.error("Unexpected error:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };

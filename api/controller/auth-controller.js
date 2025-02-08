@@ -60,7 +60,7 @@ const registerUser = async (req, res) => {
 
         newUser.avatar = { cloudinary: cloudinaryUrl, local: localPath };
       } catch (error) {
-        console.error("Avatar upload failed:", error);
+        // console.error("Avatar upload failed:", error);
         return res.status(500).json({
           success: false,
           message: "Avatar upload failed. Try again later.",
@@ -84,7 +84,7 @@ const registerUser = async (req, res) => {
           message: "Email registered successfully. Please verify your email.",
         });
       } catch (error) {
-        console.error("Error sending verification email:", error);
+        // console.error("Error sending verification email:", error);
         return res.status(500).json({
           success: false,
           message: "User registered, but email verification failed.",
@@ -101,7 +101,7 @@ const registerUser = async (req, res) => {
       user: newUser,
     });
   } catch (error) {
-    console.error("Error registering user:", error);
+    // console.error("Error registering user:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while registering the user.",
@@ -172,7 +172,7 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error logging in:", error);
+    // console.error("Error logging in:", error);
     res.status(500).json({ success: false, message: "Login failed" });
   }
 };
@@ -186,7 +186,7 @@ const getUsers = async (req, res) => {
     }
     res.status(200).json(users);
   } catch (error) {
-    console.error("Error fetching users:", error);
+    // console.error("Error fetching users:", error);
     res.status(500).json({ message: "Error fetching users" });
   }
 };

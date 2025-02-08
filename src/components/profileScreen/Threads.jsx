@@ -22,6 +22,7 @@ const Threads = ({ posts }) => {
           <PostList item={item} action="post" />
        
       )}
+      showsVerticalScrollIndicator={false}
     />
     </View>
   );
