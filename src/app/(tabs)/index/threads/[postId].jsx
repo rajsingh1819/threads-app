@@ -37,7 +37,7 @@ const UserComments = () => {
   useEffect(() => {
     const fetchPost = async () => {
       if (postId) {
-        const result = await getSinglePost({ postId });
+        const result = await getSinglePost(postId);
 
         if (result.success) {
           setUserItem(result.data.post || {});

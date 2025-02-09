@@ -9,19 +9,10 @@ import {
 } from "lucide-react-native";
 import imagePath from "../../constant/imagePath";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { checkAuth } from "../../provider/auth";
 import AvatarView from "../../util/AvatarView";
 
 
-const HomeHeader = () => {
-  const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
+const HomeHeader = ({user}) => {
 
   return (
     <View className="rounded-lg">
@@ -36,7 +27,7 @@ const HomeHeader = () => {
 
       <View className="flex-row bg-white p-1 pt-5 pb-5 gap-3 rounded-lg border border-slate-300">
         {/* User Avatar (Replaced with AvatarView Component) */}
-        <AvatarView avatarUri={user?.avatar?.cloudinary} size="md" /> 
+        <AvatarView avatarUri={user?.avatar?.cloudinary || imagePath?.user} size="md" /> 
         
         <Pressable className="flex-1" onPress={() => router.push("/post")}>
           <Text className="text-lg font-bold text-gray-800">

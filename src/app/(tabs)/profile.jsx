@@ -20,10 +20,10 @@ import {
   UserRoundCog,
   AlignRight,
 } from "lucide-react-native";
-import imagePath from "../../constant/imagePath";
 
 import ProfileAction from "../../components/profileScreen/ProfileAction";
 import AvatarView from "../../util/AvatarView";
+import imagePath from "../../constant/imagePath";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
@@ -78,11 +78,11 @@ const UserProfile = () => {
                   !user?.image && "bg-gray-400"
                 } rounded-full`}
               >
-                {!user?.avatar ? (
-                  <UserRoundCog size={40} fill="black" />
-                ) : (
-                  <AvatarView avatarUri={user?.avatar?.cloudinary} size="lg" />
-                )}
+                <AvatarView
+                  avatarUri={user?.avatar?.cloudinary || imagePath?.user}
+                  size="lg"
+                  currentUserId={user?._id}
+                />
               </View>
             </View>
 

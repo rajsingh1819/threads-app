@@ -37,7 +37,7 @@ const ProfileAction = ({ user }) => {
 
   const renderScreen = () => {
     if (!user?._id) {
-      console.error("User or user ID is not available.");
+      // console.error("User or user ID is not available.");
       return <Text>Error: Unable to load posts</Text>;
     }
   

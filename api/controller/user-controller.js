@@ -1,6 +1,13 @@
 const User = require("../models/User");
 require("dotenv").config();
 
+const {
+  uploadAvatarToCloudinary,
+  saveAvatarLocally,
+   deleteFromCloudinary,
+  deleteLocalAvatar
+} = require("../util/uploadAvatarToCloudinary");
+
 const follow = async (req, res) => {
   const { currentUserId, selectedUserId } = req.body;
 
@@ -215,6 +222,49 @@ const userPrivacy = async (req, res) => {
   }
 };
 
+const updateUserAvatar = async (req, res) => {
+  const { userId, image } = req.body;
+
+  if (!userId || !image) {
+    return res.status(400).json({ success: false, message: "User ID and image are required" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const userIdString = userId.toString();
+
+    // Delete previous avatar (if exists)
+    if (user.avatar?.cloudinary) {
+      await deleteFromCloudinary(user.avatar.cloudinary);
+    }
+    // if (user.avatar?.local) {
+    //   deleteLocalAvatar(userIdString);
+    // }
+
+    // Upload new avatar
+    const cloudinaryUrl = await uploadAvatarToCloudinary(image, userIdString);
+    const localPath = await saveAvatarLocally(image, userIdString);
+
+    // Update user record
+    user.avatar = { cloudinary: cloudinaryUrl, local: localPath };
+    await user.save();
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error("Error updating the avatar:", error);
+    res.status(500).json({ success: false, message: "Error updating the avatar." });
+  }
+};
+
+
+
+
+
+
 module.exports = {
   follow,
   unfollow,
@@ -222,4 +272,5 @@ module.exports = {
   denyFollowRequest,
   userProfile,
   userPrivacy,
+  updateUserAvatar
 };

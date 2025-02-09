@@ -22,8 +22,8 @@ const Index = () => {
     const checkToken = async () => {
       setIsCheckingAuth(true);
       try {
-        const token = await AsyncStorage.getItem("authToken"); // Get token from AsyncStorage
-        setAuthToken(token); // Save token to state
+        const token = await AsyncStorage.getItem("authToken");
+        setAuthToken(token || null); // Handle null token
       } catch (err) {
         console.error("Error reading authToken:", err);
       } finally {
@@ -41,14 +41,10 @@ const Index = () => {
     return (
       <SafeAreaView className="flex-1 items-center px-5 bg-green-500">
         <View className="flex-1 justify-center items-center">
-          <Image
-            source={{ uri: imagePath?.logo }} // Replace with your actual logo path
-            className="w-36 h-24"
-            resizeMode="contain"
-          />
+          <Image source={{ uri: imagePath?.logo }} className="w-36 h-24" resizeMode="contain" />
         </View>
         <View className="h-16 items-center mt-5 mb-2">
-          <ActivityIndicator size="large" color="black" className="mb-2" />
+          <ActivityIndicator size="large" color="black" />
           <Text className="text-base text-black">Loading...</Text>
         </View>
       </SafeAreaView>
@@ -59,7 +55,7 @@ const Index = () => {
   if (isCheckingAuth) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size={30} color="black" />
+        <ActivityIndicator size="large" color="black" />
       </View>
     );
   }

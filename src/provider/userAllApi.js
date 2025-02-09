@@ -18,7 +18,7 @@ export const createPostApi = async ({ content, userId, image }) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Post creation error:", errorData);
+      // console.error("Post creation error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to create post",
@@ -26,16 +26,16 @@ export const createPostApi = async ({ content, userId, image }) => {
     }
 
     const data = await response.json();
-    console.log("Post created successfully:", data);
+    // console.log("Post created successfully:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error creating post:", error);
+    // console.error("Unexpected error creating post:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
 
 
-export const getSinglePost = async ({ postId }) => {
+export const getSinglePost = async ( postId) => {
   // Correct API endpoint
   const api = `${url}/api/posts/${postId}/get/singlePost`;
 
@@ -46,7 +46,7 @@ export const getSinglePost = async ({ postId }) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Post fetch error:", errorData);
+      // console.error("Post fetch error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to fetch the post",
@@ -57,7 +57,7 @@ export const getSinglePost = async ({ postId }) => {
     // console.log("Post data:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error fetching post:", error);
+    // console.error("Unexpected error fetching post:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -72,7 +72,7 @@ export const getAllPost = async () => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Post creation error:", errorData);
+      // console.error("Post creation error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to featch the posts",
@@ -83,7 +83,7 @@ export const getAllPost = async () => {
     // console.log("Post data:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error featching posts:", error);
+    // console.error("Unexpected error featching posts:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -102,7 +102,7 @@ export const checkPrivate = async ({ userId, isPrivate }) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error updating account privacy", errorData);
+      // console.error("Error updating account privacy", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to change the privacy",
@@ -113,7 +113,7 @@ export const checkPrivate = async ({ userId, isPrivate }) => {
     // console.log("Privacy updated:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Error updating account privacy:", error);
+    // console.error("Error updating account privacy:", error);
     return { success: false, message: "Error updating account privacy" };
   }
 };
@@ -138,7 +138,7 @@ export const createNewComment = async ({
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Comment creation error:", errorData);
+      // console.error("Comment creation error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to create comment",
@@ -147,10 +147,10 @@ export const createNewComment = async ({
 
     // Handle success response
     const data = await response.json();
-    console.log("Comment created successfully:", data);
+    // console.log("Comment created successfully:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error creating comment:", error);
+    // console.error("Unexpected error creating comment:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -169,7 +169,7 @@ export const likeEntity = async (type, entityId, userId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Like entity error:", errorData);
+      // console.error("Like entity error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to like entity",
@@ -177,10 +177,10 @@ export const likeEntity = async (type, entityId, userId) => {
     }
 
     const data = await response.json();
-    console.log("Entity liked successfully:", data);
+    // console.log("Entity liked successfully:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error liking entity:", error);
+    // console.error("Unexpected error liking entity:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -199,7 +199,7 @@ export const unlikeEntity = async (type, entityId, userId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Unlike entity error:", errorData);
+      // console.error("Unlike entity error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to unlike entity",
@@ -207,10 +207,10 @@ export const unlikeEntity = async (type, entityId, userId) => {
     }
 
     const data = await response.json();
-    console.log("Entity unliked successfully:", data);
+    // console.log("Entity unliked successfully:", data);
     return { success: true, data };
   } catch (error) {
-    console.error("Unexpected error unliking entity:", error);
+    // console.error("Unexpected error unliking entity:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -236,7 +236,7 @@ export const singleUser = async (userId) => {
     // console.log(" user comming successfully:", data);
     return data;
   } catch (error) {
-    console.error("Unexpected error unliking entity:", error);
+    // console.error("Unexpected error unliking entity:", error);
     return { success: false, message: "An unexpected error occurred" };
   }
 };
@@ -251,7 +251,7 @@ export const deleteUserPost = async (postId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Deletation error:", errorData);
+      // console.error("Deletation error:", errorData);
       return {
         success: false,
         message: errorData.message || "Failed to delete",
@@ -260,7 +260,7 @@ export const deleteUserPost = async (postId) => {
 
     // Handle success response
     const data = await response.json();
-    console.log("delete successfully:", data);
+    // console.log("delete successfully:", data);
     return data;
   } catch (error) {
     // console.error("Unexpected error:", error);
@@ -309,7 +309,7 @@ export const FollowUser = async (currentUserId, selectedUserId) => {
 
     return data; // Return API response
   } catch (error) {
-    console.error("Error sending follow request:", error.message);
+    // console.error("Error sending follow request:", error.message);
     return null;
   }
 };
@@ -332,7 +332,7 @@ export const UnfollowUser = async (currentUserId, targetUserId) => {
 
     return data;
   } catch (error) {
-    console.error("Error unfollowing user:", error.message);
+    // console.error("Error unfollowing user:", error.message);
     return null;
   }
 };
@@ -362,7 +362,7 @@ export const handleAccept = async (currentUserId, senderUserId) => {
 
     return data;
   } catch (error) {
-    console.error("Error accepting request:", error);
+    // console.error("Error accepting request:", error);
     showToast("error", "Failed to approve request");
   }
 };
@@ -388,7 +388,39 @@ export const handleReject = async (currentUserId, senderUserId) => {
 
     return data;
   } catch (error) {
-    console.error("Error rejecting request:", error);
+    // console.error("Error rejecting request:", error);
     showToast("error", "Failed to deny request");
+  }
+};
+
+
+
+// In your handleAvatar function
+export const handleAvatar = async ({ userId, image }) => {
+ 
+
+  const api = `${url}/api/auth/avatar/update`;
+
+  try {
+    const response = await fetch(api, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId, image }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error updating avatar request");
+    }
+
+    showToast("success", "Avatar updated successfully!");
+    return data;
+
+  } catch (error) {
+    // console.error("Error updating avatar:", error);
+    showToast("error", error.message || "Failed to update avatar");
   }
 };

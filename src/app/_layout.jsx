@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import store from "../provider/store/store";
 import Toast from "react-native-toast-message";
 import { router, Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler"; // Gesture Handler Root
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,6 +29,7 @@ export default function RootLayout() {
   }
 
   return (
+    <GestureHandlerRootView className="flex-1">
     <Provider store={store}>
       <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -39,5 +41,6 @@ export default function RootLayout() {
       </Stack>
       <Toast position="top" />
     </Provider>
+    </GestureHandlerRootView>
   );
 }

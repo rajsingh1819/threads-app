@@ -17,6 +17,7 @@ const {
   denyFollowRequest,
   userProfile,
   userPrivacy,
+  updateUserAvatar
 } = require("../controller/user-controller");
 
 router.post("/user/register", registerUser);
@@ -31,6 +32,7 @@ router.post("/user/approveFollowRequest", approveFollowRequest);
 router.post("/user/denyFollowRequest", denyFollowRequest);
 router.post("/profile/set-privacy", userPrivacy);
 router.get("/profile/:userId", userProfile);
+router.put("/avatar/update",updateUserAvatar);
 
 module.exports = router;
 

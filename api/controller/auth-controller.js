@@ -15,7 +15,6 @@ require("dotenv").config();
 
 
 const registerUser = async (req, res) => {
-  
   try {
     const { username, emailorphone, password, avatar } = req.body;
 
@@ -52,7 +51,7 @@ const registerUser = async (req, res) => {
     });
 
     // Avatar handling (if provided)
-    if (avatar) {
+    if (avatar && avatar !== "") {
       try {
         const userId = newUser._id.toString();
         const cloudinaryUrl = await uploadAvatarToCloudinary(avatar, userId);
@@ -60,12 +59,14 @@ const registerUser = async (req, res) => {
 
         newUser.avatar = { cloudinary: cloudinaryUrl, local: localPath };
       } catch (error) {
-        // console.error("Avatar upload failed:", error);
         return res.status(500).json({
           success: false,
           message: "Avatar upload failed. Try again later.",
         });
       }
+    } else {
+      // If no avatar is provided, leave it as null or an empty object
+      newUser.avatar = null;
     }
 
     // Email verification (if applicable)
@@ -84,7 +85,6 @@ const registerUser = async (req, res) => {
           message: "Email registered successfully. Please verify your email.",
         });
       } catch (error) {
-        // console.error("Error sending verification email:", error);
         return res.status(500).json({
           success: false,
           message: "User registered, but email verification failed.",
@@ -101,13 +101,13 @@ const registerUser = async (req, res) => {
       user: newUser,
     });
   } catch (error) {
-    // console.error("Error registering user:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while registering the user.",
     });
   }
 };
+
 
 // login
 

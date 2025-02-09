@@ -36,8 +36,6 @@ export default function UserSearch() {
       const result = await getAllUsers(user?._id);
       if (result.success) {
         setUsers(result.data || []);
-      } else {
-        console.error("Error fetching users:", result.message);
       }
     } catch (error) {
       console.error("Unexpected error:", error);

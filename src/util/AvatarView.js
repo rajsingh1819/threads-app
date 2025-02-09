@@ -1,9 +1,9 @@
-import { Image, Pressable } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { useState } from "react";
 import ZoomImageModal from "./ZoomImageModal";
-import imagePath from "../constant/imagePath";
 
-const AvatarView = ({ avatarUri, size = "md" }) => {
+
+const AvatarView = ({ avatarUri, size = "md" ,currentUserId}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Define different size classes
@@ -17,20 +17,33 @@ const AvatarView = ({ avatarUri, size = "md" }) => {
   return (
     <>
       <Pressable onPress={() => setModalVisible(true)}>
-        <Image
-          source={{ uri: avatarUri || imagePath?.user }}
-          className={`${sizeClasses[size] || sizeClasses.md} rounded-full`}
-          resizeMode="cover"
-        />
+        <View>
+          <Image
+            source={{ uri: avatarUri }}
+            className={`${sizeClasses[size] || sizeClasses.md} rounded-full`}
+            resizeMode="cover"
+          />
+        </View>
       </Pressable>
 
-      <ZoomImageModal
-        visible={modalVisible}
-        imageUri={avatarUri}
-        onClose={() => setModalVisible(false)}
-      />
+      {modalVisible && (
+        <ZoomImageModal
+          visible={modalVisible}
+          imageUri={avatarUri}
+          onClose={() => setModalVisible(false)}
+          currentUserId={currentUserId}
+        />
+      )}
     </>
   );
 };
 
 export default AvatarView;
+
+
+
+
+
+
+
+

@@ -50,7 +50,7 @@ const User = () => {
   const fetchUser = useCallback(async () => {
     try {
       const result = await singleUser(id);
-      if (result.success) {
+      if (result?.success) {
         setUserDetails(result?.user || {});
         setIsRequested(result.user?.receivedFollowRequests?.includes(user?._id) || false);
       } else {
@@ -154,11 +154,9 @@ const User = () => {
                 !userDetails?.avatar && "bg-gray-400"
               } rounded-full`}
             >
-              {!userDetails?.avatar ? (
-                <UserRoundCog size={40} fill="black" />
-              ) : (
-                <AvatarView avatarUri={userDetails?.avatar?.cloudinary} size="lg" />
-              )}
+             
+                <AvatarView avatarUri={userDetails?.avatar?.cloudinary || imagePath?.user} size="lg" />
+              
             </View>
           </View>
 
