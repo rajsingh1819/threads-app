@@ -1,13 +1,14 @@
 import { View } from "react-native";
-import React, {  useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { router} from "expo-router";
+import { router } from "expo-router";
 import CheckPrivacyStatus from "../../components/userSettings/checkPrivacy";
 import UserLogout from "../../components/userSettings/userLogout";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { checkAuth } from "../../provider/auth";
 import HeaderBack from "../../constant/HeaderBack";
+import AuthGuard from "../../components/AuthGuard";
 
 const Setting = () => {
   const dispatch = useDispatch();
@@ -25,16 +26,18 @@ const Setting = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-1 items-center">
-        <View className="w-full sm:w-1/2 flex-1 p-1 gap-2">
-          <HeaderBack title="Setting" onPress={handleBackPress} />
+    <AuthGuard>
+      <SafeAreaView className="flex-1">
+        <View className="flex-1 items-center">
+          <View className="w-full sm:w-1/2 flex-1 p-1 gap-2">
+            <HeaderBack title="Setting" onPress={handleBackPress} />
 
-          <CheckPrivacyStatus />
-          <UserLogout />
+            <CheckPrivacyStatus />
+            <UserLogout />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </AuthGuard>
   );
 };
 

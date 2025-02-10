@@ -52,12 +52,12 @@ const UpdateAvatar = ({ currentUserId, imageUri, setImageView, onClose }) => {
       {/* If no image is selected, show the "Change Avatar" button */}
       {!imageSelected ? (
         <TouchableOpacity onPress={handleChangeAvatar} className="mt-2 bg-black p-4 rounded-lg">
-          <Text className="text-blue-500">Change Avatar</Text>
+          <Text className="text-white">Change Avatar</Text>
         </TouchableOpacity>
       ) : (
         // After selecting an image, show "Confirm Update"
         <TouchableOpacity onPress={handleUpdateAvatar} className="mt-2 bg-black p-4 rounded-lg">
-          <Text className="text-green-500">Confirm Update</Text>
+          <Text className="text-green-500">Confirm & Update</Text>
         </TouchableOpacity>
       )}
     </View>

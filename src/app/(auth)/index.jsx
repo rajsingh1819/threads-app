@@ -55,7 +55,7 @@ const LoginUser = () => {
     <SafeAreaView className=" flex-1 ">
       <KeyboardAvoidingView className="flex-1 items-center">
         <View className=" w-full sm:w-1/2 flex-1 ">
-          <View className="items-center ">
+          <View className="items-center mt-1 ">
             <Image
               source={{ uri: imagePath.logo }}
               className="h-20 w-20 rounded-full"

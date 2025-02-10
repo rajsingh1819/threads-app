@@ -1,9 +1,6 @@
 import { url } from "./url";
 import { showToast } from "../constant/showToast";
 
-
-
-
 export const createPostApi = async ({ content, userId, image }) => {
   const api = `${url}/api/posts/create`;
 
@@ -34,8 +31,7 @@ export const createPostApi = async ({ content, userId, image }) => {
   }
 };
 
-
-export const getSinglePost = async ( postId) => {
+export const getSinglePost = async (postId) => {
   // Correct API endpoint
   const api = `${url}/api/posts/${postId}/get/singlePost`;
 
@@ -274,7 +270,7 @@ export const getAllUsers = async (userId) => {
     const response = await fetch(api, { method: "GET" });
     if (!response.ok) {
       const errorData = await response.json();
-    
+
       return {
         success: false,
         message: errorData.message || "Failed to fetch users",
@@ -287,9 +283,6 @@ export const getAllUsers = async (userId) => {
     return { success: false, message: "An unexpected error occurred" };
   }
 };
-
-
-
 
 export const FollowUser = async (currentUserId, selectedUserId) => {
   const api = `${url}/api/auth/user/follow`;
@@ -337,20 +330,19 @@ export const UnfollowUser = async (currentUserId, targetUserId) => {
   }
 };
 
-
-
 // Handle user request to approve or reject follow request
 
 export const handleAccept = async (currentUserId, senderUserId) => {
   const api = `${url}/api/auth/user/approveFollowRequest`;
   try {
     const response = await fetch(api, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        currentUserId, senderUserId
+        currentUserId,
+        senderUserId,
       }),
     });
 
@@ -371,12 +363,13 @@ export const handleReject = async (currentUserId, senderUserId) => {
   const api = `${url}/api/auth/user/denyFollowRequest`;
   try {
     const response = await fetch(api, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        currentUserId, senderUserId
+        currentUserId,
+        senderUserId,
       }),
     });
 
@@ -393,19 +386,15 @@ export const handleReject = async (currentUserId, senderUserId) => {
   }
 };
 
-
-
 // In your handleAvatar function
 export const handleAvatar = async ({ userId, image }) => {
- 
-
   const api = `${url}/api/auth/avatar/update`;
 
   try {
     const response = await fetch(api, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ userId, image }),
     });
@@ -418,9 +407,44 @@ export const handleAvatar = async ({ userId, image }) => {
 
     showToast("success", "Avatar updated successfully!");
     return data;
-
   } catch (error) {
     // console.error("Error updating avatar:", error);
     showToast("error", error.message || "Failed to update avatar");
   }
+};
+
+
+
+
+
+
+
+// Forgot Password
+const BASE_URL = `${url}/api/forgot`;
+
+export const sendOTP = async (emailOrPhone) => {
+  const response = await fetch(`${BASE_URL}/request-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ emailOrPhone }),
+  });
+  return response.json();
+};
+
+export const verifyUserOtp = async (emailOrPhone, otp) => {
+  const response = await fetch(`${BASE_URL}/verify-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ emailOrPhone, otp }),
+  });
+  return response.json();
+};
+
+export const resetUserPassword = async (emailOrPhone, otp, newPassword) => {
+  const response = await fetch(`${BASE_URL}/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ emailOrPhone, otp, newPassword }),
+  });
+  return response.json();
 };

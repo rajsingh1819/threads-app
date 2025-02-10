@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { checkAuth } from "../../provider/auth";
 import imagePath from "../../constant/imagePath";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons"; // Import the search icon
 
 export default function UserSearch() {
   const { isAuthenticated, user, isLoading } = useSelector(
@@ -24,6 +25,7 @@ export default function UserSearch() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]); // Initially empty
+  const [isFocused, setIsFocused] = useState(false); // Track if input is focused
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -80,12 +82,29 @@ export default function UserSearch() {
         <Text className="text-2xl font-bold mb-2 text-center">
           Search Users
         </Text>
-        <TextInput
-          className="border p-3 rounded-lg mb-4"
-          placeholder="Search by username (@username supported)"
-          value={search}
-          onChangeText={handleSearch}
-        />
+        <View
+          className={`flex-row items-center p-1 rounded-lg mb-4  ${
+            !isFocused && "border "
+          }`}
+        >
+          {/* Show the search icon only when search input is empty and not focused */}
+          {search.trim() === "" && !isFocused && (
+            <TouchableOpacity className="mr-2">
+              <Ionicons name="search" size={24} color="gray" />
+            </TouchableOpacity>
+          )}
+
+          <TextInput
+            className={`flex-1 p-3 rounded-lg  ${isFocused && "border"}`}
+            placeholder="Search by username (@username supported)"
+            placeholderTextColor="gray"
+            value={search}
+            onChangeText={handleSearch}
+            onFocus={() => setIsFocused(true)} // Input focused
+            onBlur={() => setIsFocused(false)} // Input blurred
+          />
+        </View>
+
         {filteredUsers.length > 0 ? (
           <FlatList
             data={filteredUsers}

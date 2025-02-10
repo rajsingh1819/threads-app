@@ -7,6 +7,7 @@ const path = require("path");
 
 const userRouter = require("./routes/auth-routes");
 const userPostRouter = require("./routes/post-routes");
+const forgotPasswordRoutes = require("./routes/forgotPassword-route");
 // const imageUpload = require("./routes/avatar/image-uploader");
 
 dotenv.config();
@@ -32,10 +33,8 @@ mongoose
 // Routes
 app.use("/api/auth", userRouter);
 app.use("/api/posts", userPostRouter);
-// app.use("/api/user", imageUpload);
+app.use("/api/forgot", forgotPasswordRoutes);
 
-// Serve static files
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Start the server
 const PORT = process.env.PORT || 3000;

@@ -39,7 +39,7 @@ const Index = () => {
   // Splash screen display
   if (isSplashLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center px-5 bg-green-500">
+      <SafeAreaView className="flex-1 items-center px-5">
         <View className="flex-1 justify-center items-center">
           <Image source={{ uri: imagePath?.logo }} className="w-36 h-24" resizeMode="contain" />
         </View>

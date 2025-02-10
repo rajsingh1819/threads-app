@@ -26,11 +26,11 @@ const UserForm = ({ userData, setUserData }) => {
   };
 
   return (
-    <View className="w-full gap-4">
+    <View className="w-full gap-4 ">
       {/* Email or Phone Input */}
       <View className="border p-2 rounded-lg bg-white">
         <View className="flex-row items-center gap-3">
-          {isPhone ? <Phone size={30} /> : <Mail size={30} />}
+        
           <TextInput
             placeholder="Enter email or phone number..."
             className="flex-1 p-2 rounded-lg text-base font-semibold"
@@ -46,7 +46,7 @@ const UserForm = ({ userData, setUserData }) => {
       {/* Password Input */}
       <View className="border p-2 rounded-lg bg-white">
         <View className="flex-row items-center gap-3">
-          <KeyRound size={30} />
+        
           <TextInput
             placeholder="Enter your password..."
             className="flex-1 p-2 rounded-lg text-base font-semibold"

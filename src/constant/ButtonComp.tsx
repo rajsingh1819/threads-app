@@ -16,9 +16,9 @@ const ButtonComp = ({ title, onPress, style, icon: Icon, iconStyle }: any) => {
 
 const styles = StyleSheet.create({
   button_container: {
-    backgroundColor: "black",
+    backgroundColor: "#3b82f6",
     width: "100%",
-    padding: 15,
+    padding: 12,
     // paddingVertical: 12,
     // paddingHorizontal: 10,
     borderRadius: 10,
