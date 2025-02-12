@@ -1,14 +1,11 @@
-import { View, Text } from "react-native";
-import React from "react";
-import { logoutUser } from "../../provider/auth";
-import ButtonComp from "../../constant/ButtonComp";
 import { useDispatch } from "react-redux";
-import { showToast } from "../../constant/showToast";
+import { showToast } from "../constant/showToast";
 import { router } from "expo-router";
+import { logoutUser } from "../provider/auth";
 
-
-const UserLogout = () => {
+const userLogout = () => {
   const dispatch = useDispatch();
+
   const handleLogout = async () => {
     try {
       const result = await dispatch(logoutUser()).unwrap();
@@ -21,13 +18,7 @@ const UserLogout = () => {
     }
   };
 
-  
-  return (
-    <View className="bg-orange-300 mt-10">
-      <ButtonComp title="Logout" onPress={handleLogout}/>
-     
-    </View>
-  );
+  return handleLogout; 
 };
 
-export default UserLogout;
+export default userLogout;

@@ -6,12 +6,12 @@ import { router } from "expo-router";
 
 const Comment = ({ comment, postId, user }) => {
   // console.log(" comment, postId", comment, postId)
-  const [showReplies, setShowReplies] = useState(false); // Track if replies are shown
+  const [showReplies, setShowReplies] = useState(false); 
   const action = "comment";
   const [replyTo, setReplyTo] = useState(null);
 
   const handleReply = () => {
-    setReplyTo(comment); // Set the replyTo state to the selected comment
+    setReplyTo(comment);
     router.push({
       pathname: "/reply",
       params: {

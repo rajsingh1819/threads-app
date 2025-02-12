@@ -1,5 +1,3 @@
-
-
 const mongoose = require("mongoose");
 
 const replySchema = new mongoose.Schema({
@@ -10,7 +8,7 @@ const replySchema = new mongoose.Schema({
   },
   content: { 
     type: String, 
-    // required: true 
+    required: true 
   },
   likes: [
     {
@@ -30,13 +28,13 @@ const commentSchema = new mongoose.Schema({
     ref: "User", 
     required: true 
   },
-  images: { // Array to store multiple images for a post
+  images: { 
     cloudinary: { type: String }, // Cloudinary URL
     local: { type: String }, // Local image path
   },
   content: { 
     type: String, 
-    // required: true 
+    required: true 
   },
   likes: [
     {
@@ -57,9 +55,9 @@ const commentSchema = new mongoose.Schema({
 const postSchema = new mongoose.Schema({
   content: { 
     type: String, 
-    // required: true 
+    required: true 
   },
-  images: { // Array to store multiple images for a post
+  images: { 
     cloudinary: { type: String }, // Cloudinary URL
     local: { type: String }, // Local image path
   },

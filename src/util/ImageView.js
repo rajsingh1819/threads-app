@@ -8,7 +8,11 @@ const ImageView = ({ imageUri, className = "w-full h-44 rounded-lg" }) => {
   return (
     <>
       <Pressable onPress={() => setModalVisible(true)}>
-        <Image source={{ uri: imageUri }} className={className} resizeMode="contain" />
+        <Image
+          source={{ uri: imageUri }}
+          className={className}
+          resizeMode="contain"
+        />
       </Pressable>
 
       <ZoomImageModal

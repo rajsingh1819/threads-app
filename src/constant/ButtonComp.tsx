@@ -16,7 +16,7 @@ const ButtonComp = ({ title, onPress, style, icon: Icon, iconStyle }: any) => {
 
 const styles = StyleSheet.create({
   button_container: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: "#007BFF",
     width: "100%",
     padding: 12,
     // paddingVertical: 12,
@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center", 
-    position: "relative", 
+    justifyContent: "center",
+    position: "relative",
   },
   button_text: {
     fontSize: 16,

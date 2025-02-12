@@ -14,7 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { checkAuth } from "../../provider/auth";
 import imagePath from "../../constant/imagePath";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Import the search icon
+import { Search } from "lucide-react-native";
 
 export default function UserSearch() {
   const { isAuthenticated, user, isLoading } = useSelector(
@@ -89,8 +89,8 @@ export default function UserSearch() {
         >
           {/* Show the search icon only when search input is empty and not focused */}
           {search.trim() === "" && !isFocused && (
-            <TouchableOpacity className="mr-2">
-              <Ionicons name="search" size={24} color="gray" />
+            <TouchableOpacity>
+              <Search size={24} color="gray" />
             </TouchableOpacity>
           )}
 

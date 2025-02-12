@@ -11,24 +11,26 @@ import imagePath from "../../constant/imagePath";
 import { router } from "expo-router";
 import AvatarView from "../../util/AvatarView";
 
-
-const HomeHeader = ({user}) => {
-
+const HomeHeader = ({ user }) => {
   return (
-    <View className="rounded-lg">
+    <View className="p-1">
       {/* Logo */}
-      <View className="flex items-center mb-3">
+      <View className="flex items-center mb-1">
         <Image
-          source={{ uri: imagePath?.logo }}
-          className="h-12 w-12"
+          source={imagePath?.logo}
+          style={{ width: 50, height: 50 }}
+          className="rounded-full"
           resizeMode="contain"
         />
       </View>
 
       <View className="flex-row bg-white p-1 pt-5 pb-5 gap-3 rounded-lg border border-slate-300">
-        {/* User Avatar (Replaced with AvatarView Component) */}
-        <AvatarView avatarUri={user?.avatar?.cloudinary || imagePath?.user} size="md" /> 
-        
+       
+        <AvatarView
+          avatarUri={user?.avatar?.cloudinary || imagePath?.user}
+          size="md"
+        />
+
         <Pressable className="flex-1" onPress={() => router.push("/post")}>
           <Text className="text-lg font-bold text-gray-800">
             {user?.username || "Unknown"}

@@ -4,8 +4,8 @@ require("dotenv").config();
 const {
   uploadAvatarToCloudinary,
   saveAvatarLocally,
-   deleteFromCloudinary,
-  deleteLocalAvatar
+  deleteFromCloudinary,
+  deleteLocalAvatar,
 } = require("../util/uploadAvatarToCloudinary");
 
 const follow = async (req, res) => {
@@ -65,7 +65,6 @@ const unfollow = async (req, res) => {
     }
 
     if (targetUser?.isPrivate) {
-      // If the user is private, remove the follow request instead of unfollowing
       await User.findByIdAndUpdate(targetUserId, {
         $pull: { receivedFollowRequests: currentUserId },
       });
@@ -85,10 +84,6 @@ const unfollow = async (req, res) => {
       return res
         .status(200)
         .json({ message: "Unfollowed private user successfully" });
-
-      return res
-        .status(200)
-        .json({ message: "Follow request canceled successfully." });
     } else {
       // If the user is public, proceed with normal unfollowing
       await User.findByIdAndUpdate(targetUserId, {
@@ -161,7 +156,7 @@ const denyFollowRequest = async (req, res) => {
   }
 };
 
-// /profile/:userId
+
 const userProfile = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -184,9 +179,8 @@ const userProfile = async (req, res) => {
   }
 };
 
-// /profile/:userId/set-privacy
+
 const userPrivacy = async (req, res) => {
-  // const { userId } = req.params;
   const { isPrivate, userId } = req.body;
 
   if (!userId || typeof isPrivate !== "boolean") {
@@ -212,6 +206,7 @@ const userPrivacy = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Account privacy updated.",
+     
     });
   } catch (error) {
     console.error("Error updating account privacy:", error);
@@ -226,13 +221,17 @@ const updateUserAvatar = async (req, res) => {
   const { userId, image } = req.body;
 
   if (!userId || !image) {
-    return res.status(400).json({ success: false, message: "User ID and image are required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID and image are required" });
   }
 
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     const userIdString = userId.toString();
@@ -256,14 +255,78 @@ const updateUserAvatar = async (req, res) => {
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.error("Error updating the avatar:", error);
-    res.status(500).json({ success: false, message: "Error updating the avatar." });
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating the avatar." });
   }
 };
 
+const editProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const updateData = req.body;
 
+    // If 'name' is undefined, set it to an empty string
+    if (updateData.name === undefined) {
+      updateData.name = "";
+    }
 
+    const fieldsToUpdate = {};
 
+    // Update name (whether it's empty or provided)
+    fieldsToUpdate.name = updateData.name;
 
+    // Update social links: if passed, update, otherwise set to empty string
+    if (updateData.socialLinks) {
+      fieldsToUpdate["socialLinks.github"] =
+        updateData.socialLinks.github !== undefined
+          ? updateData.socialLinks.github
+          : "";
+      fieldsToUpdate["socialLinks.linkedin"] =
+        updateData.socialLinks.linkedin !== undefined
+          ? updateData.socialLinks.linkedin
+          : "";
+      fieldsToUpdate["socialLinks.instagram"] =
+        updateData.socialLinks.instagram !== undefined
+          ? updateData.socialLinks.instagram
+          : "";
+      fieldsToUpdate["socialLinks.twitter"] =
+        updateData.socialLinks.twitter !== undefined
+          ? updateData.socialLinks.twitter
+          : "";
+    } else {
+      // If no socialLinks are passed, set them all to empty
+      fieldsToUpdate["socialLinks"] = {
+        github: "",
+        linkedin: "",
+        instagram: "",
+        twitter: "",
+      };
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: fieldsToUpdate },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+      success: true,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating profile", error, success: false });
+  }
+};
 
 module.exports = {
   follow,
@@ -272,5 +335,6 @@ module.exports = {
   denyFollowRequest,
   userProfile,
   userPrivacy,
-  updateUserAvatar
+  updateUserAvatar,
+  editProfile,
 };

@@ -7,7 +7,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import { ChevronLeft, AtSign } from "lucide-react-native";
+import { AtSign } from "lucide-react-native";
 import ButtonComp from "../../constant/ButtonComp";
 import { showToast } from "../../constant/showToast";
 import { useDispatch } from "react-redux";
@@ -15,7 +15,7 @@ import { registerUser } from "../../provider/auth";
 import { router } from "expo-router";
 import { pickImage } from "../../util/mediaPicker";
 import HeaderBack from "../../constant/HeaderBack";
-// import * as ImagePicker from "expo-image-picker";
+
 
 const NextScreen = ({ userData, setUserData, setShowNextPage }) => {
   const dispatch = useDispatch();

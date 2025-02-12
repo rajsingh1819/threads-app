@@ -8,13 +8,10 @@ const path = require("path");
 const userRouter = require("./routes/auth-routes");
 const userPostRouter = require("./routes/post-routes");
 const forgotPasswordRoutes = require("./routes/forgotPassword-route");
-// const imageUpload = require("./routes/avatar/image-uploader");
 
 dotenv.config();
 
 const app = express();
-
-// Increase payload size limits
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 

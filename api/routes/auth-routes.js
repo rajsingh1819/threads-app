@@ -10,6 +10,7 @@ const {
 } = require("../controller/auth-controller");
 
 const {verifyUserToken} =require("../util/sendVerificationEmail")
+
 const {
   follow,
   unfollow,
@@ -17,7 +18,8 @@ const {
   denyFollowRequest,
   userProfile,
   userPrivacy,
-  updateUserAvatar
+  updateUserAvatar,
+  editProfile
 } = require("../controller/user-controller");
 
 router.post("/user/register", registerUser);
@@ -33,6 +35,7 @@ router.post("/user/denyFollowRequest", denyFollowRequest);
 router.post("/profile/set-privacy", userPrivacy);
 router.get("/profile/:userId", userProfile);
 router.put("/avatar/update",updateUserAvatar);
+router.put("/edit-profile/:userId", editProfile);
 
 module.exports = router;
 

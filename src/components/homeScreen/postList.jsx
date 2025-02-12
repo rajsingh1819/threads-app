@@ -1,5 +1,5 @@
-import { Image, View, Text, TouchableOpacity, Pressable } from "react-native";
-import React, { useState, useEffect } from "react";
+import { Image, View, Text, TouchableOpacity} from "react-native";
+import React, { useState } from "react";
 import {
   Heart,
   MessageCircle,
@@ -10,7 +10,7 @@ import {
 import imagePath from "../../constant/imagePath";
 import { formatDistanceToNow } from "date-fns";
 import { router } from "expo-router";
-import { handleLikeToggle } from "../../util/handleIconAsction";
+import { handleLikeToggle } from "../../util/handleIconAction";
 import { useSelector } from "react-redux";
 import ImageView from "../../util/ImageView";
 

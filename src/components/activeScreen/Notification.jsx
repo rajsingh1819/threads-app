@@ -2,7 +2,6 @@ import { View, Text, Image } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
 import imagePath from "../../constant/imagePath";
-import { formatDistanceToNow } from "date-fns";
 
 const Notification = ({ item }) => {
   // console.log("item =>", item);

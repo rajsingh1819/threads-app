@@ -11,9 +11,6 @@ const {
 } = require("../util/uploadAvatarToCloudinary");
 require("dotenv").config();
 
-
-
-
 const registerUser = async (req, res) => {
   try {
     const { username, emailorphone, password, avatar } = req.body;
@@ -25,7 +22,7 @@ const registerUser = async (req, res) => {
     if (!isPhone && !isEmail) {
       return res.status(400).json({
         success: false,
-        message: "Invalid input. Provide a valid phone number or email.",
+        message: "Invalid input field",
       });
     }
 
@@ -108,7 +105,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-
 // login
 
 const secretKey =
@@ -124,8 +120,7 @@ const loginUser = async (req, res) => {
 
     if (!isPhone && !isEmail) {
       return res.status(400).json({
-        message:
-          "Invalid input. Please provide a valid 10-digit phone number or email address.",
+        message: "Invalid input field",
       });
     }
 
@@ -190,6 +185,5 @@ const getUsers = async (req, res) => {
     res.status(500).json({ message: "Error fetching users" });
   }
 };
-
 
 module.exports = { registerUser, loginUser, getUsers };

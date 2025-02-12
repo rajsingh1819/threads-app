@@ -9,7 +9,7 @@ import {
 } from "lucide-react-native";
 import imagePath from "../../constant/imagePath";
 import { formatDistanceToNow } from "date-fns";
-import { handleLikeToggle } from "../../util/handleIconAsction";
+import { handleLikeToggle } from "../../util/handleIconAction";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import ImageView from "../../util/ImageView";

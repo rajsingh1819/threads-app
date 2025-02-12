@@ -43,8 +43,9 @@ const RegisterUser = () => {
           {!showNextPage && (
             <View className="items-center mt-1">
               <Image
-                source={{ uri: imagePath.logo }}
-                className="h-20 w-20 rounded-full"
+                source={imagePath?.logo}
+                className="rounded-full"
+                style={{ width: 70, height: 70 }}
                 resizeMode="contain"
               />
             </View>

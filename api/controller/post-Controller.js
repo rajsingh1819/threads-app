@@ -1,12 +1,13 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
-const { uploadPostImage, savePostImageLocally } = require("../util/uploadPostImage");
+const {
+  uploadPostImage,
+  savePostImageLocally,
+} = require("../util/uploadPostImage");
 
 const createPost = async (req, res) => {
   try {
     const { content, userId, image } = req.body;
-
-    // Validate input - Either content or image should be provided, not both
     if (!content && !image) {
       return res.status(400).json({
         success: false,
@@ -23,7 +24,7 @@ const createPost = async (req, res) => {
       });
     }
 
-    let imageUrl = {}; // Change from `null` to an object
+    let imageUrl = {};
 
     if (image) {
       // Upload image to Cloudinary & save locally
@@ -34,11 +35,10 @@ const createPost = async (req, res) => {
       imageUrl = { cloudinary: cloudinaryUrl, local: localPath };
     }
 
-    // Create new post - Fix field name to `images`
     const newPost = new Post({
       user: userId,
-      content: content || "", // If content is not provided, an empty string is stored
-      images: imageUrl, // ✅ Fixed: Using `images` instead of `image`
+      content: content || "",
+      images: imageUrl,
     });
 
     // Save post to database
@@ -57,13 +57,6 @@ const createPost = async (req, res) => {
     });
   }
 };
-
-
-
-
-
-
-
 
 const getSinglePost = async (req, res) => {
   const { postId } = req.params;
@@ -95,9 +88,6 @@ const getSinglePost = async (req, res) => {
   }
 };
 
-
-
-
 // Create a new comment or reply to an existing comment
 const createCommentOrReply = async (req, res) => {
   const { postId } = req.params;
@@ -112,7 +102,6 @@ const createCommentOrReply = async (req, res) => {
     }
 
     if (commentId) {
-      // If a commentId is provided, it means the user is replying to an existing comment
       const comment = post.comments.id(commentId); // Find the specific comment by its _id
       if (!comment) {
         return res
@@ -167,10 +156,10 @@ const createCommentOrReply = async (req, res) => {
 const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-    .populate("user", "username avatar")
-    .populate("comments.user", "username avatar")
-    .populate("comments.replies.user", "username avatar")
-    .sort({ createdAt: -1 });
+      .populate("user", "username avatar")
+      .populate("comments.user", "username avatar")
+      .populate("comments.replies.user", "username avatar")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, message: "All Post Data", posts });
   } catch (error) {
@@ -272,27 +261,6 @@ const unlikeEntity = async (req, res) => {
 };
 
 
-const deletePost = async (req,res)=>{
-   const {userId} = req.params;
-   try{
-    if (!userId) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
-      });
-    }
-
-   return res.status(200).json({success:true, message:"Post Delete Successfully!"})
-
-   }
-   catch(error){
-       return  res.status(500).json({success:false, message:"somthing went wrong!"})
-   }
- 
-
- 
-
-}
 
 module.exports = {
   createPost,
@@ -300,6 +268,5 @@ module.exports = {
   getPosts,
   likeEntity,
   unlikeEntity,
-createCommentOrReply,
-deletePost
+  createCommentOrReply,
 };

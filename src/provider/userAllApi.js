@@ -237,32 +237,6 @@ export const singleUser = async (userId) => {
   }
 };
 
-export const deleteUserPost = async (postId) => {
-  const api = `${url}/api/posts/delete/${postId}`;
-
-  try {
-    const response = await fetch(api, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      // console.error("Deletation error:", errorData);
-      return {
-        success: false,
-        message: errorData.message || "Failed to delete",
-      };
-    }
-
-    // Handle success response
-    const data = await response.json();
-    // console.log("delete successfully:", data);
-    return data;
-  } catch (error) {
-    // console.error("Unexpected error:", error);
-    return { success: false, message: "An unexpected error occurred" };
-  }
-};
 
 export const getAllUsers = async (userId) => {
   const api = `${url}/api/auth/users/${userId}`;
@@ -420,10 +394,12 @@ export const handleAvatar = async ({ userId, image }) => {
 
 
 // Forgot Password
-const BASE_URL = `${url}/api/forgot`;
+
 
 export const sendOTP = async (emailOrPhone) => {
-  const response = await fetch(`${BASE_URL}/request-otp`, {
+  const api = `${url}/api/forgot/request-otp`;
+
+  const response = await fetch(api, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ emailOrPhone }),
@@ -432,7 +408,9 @@ export const sendOTP = async (emailOrPhone) => {
 };
 
 export const verifyUserOtp = async (emailOrPhone, otp) => {
-  const response = await fetch(`${BASE_URL}/verify-otp`, {
+  const api = `${url}/api/forgot/verify-otp`;
+
+  const response = await fetch(api, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ emailOrPhone, otp }),
@@ -441,10 +419,42 @@ export const verifyUserOtp = async (emailOrPhone, otp) => {
 };
 
 export const resetUserPassword = async (emailOrPhone, otp, newPassword) => {
-  const response = await fetch(`${BASE_URL}/reset-password`, {
+  const api = `${url}/api/forgot/reset-password`;
+
+  const response = await fetch(api, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ emailOrPhone, otp, newPassword }),
   });
   return response.json();
 };
+
+
+
+
+
+export const updateUserProfile = async (userId, updateData) => {
+  const api = `${url}/api/auth/edit-profile/${userId}`;
+  try {
+
+    const response = await fetch(api, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to update profile");
+    }
+
+    // console.log("API response:", result); // Log the API response to check for success
+    return result; // Ensure this returns the updated user data
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error;
+  }
+};
+

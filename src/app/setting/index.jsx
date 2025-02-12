@@ -1,43 +1,31 @@
 import { View } from "react-native";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
+import React from "react";
 import { router } from "expo-router";
 import CheckPrivacyStatus from "../../components/userSettings/checkPrivacy";
-import UserLogout from "../../components/userSettings/userLogout";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { checkAuth } from "../../provider/auth";
 import HeaderBack from "../../constant/HeaderBack";
-import AuthGuard from "../../components/AuthGuard";
+import ButtonComp from "../../constant/ButtonComp";
+import userLogout from "../../util/userLogout"; 
 
 const Setting = () => {
-  const dispatch = useDispatch();
-  const { isAuthenticated, user, isLoading } = useSelector(
-    (state) => state.auth
-  );
-
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
-
-  // Navigate back
   const handleBackPress = () => {
-    router.canGoBack() ? router.back() : router.push("/profile");
+    router.canGoBack() ? router.back() : router.replace("/profile");
   };
 
-  return (
-    <AuthGuard>
-      <SafeAreaView className="flex-1">
-        <View className="flex-1 items-center">
-          <View className="w-full sm:w-1/2 flex-1 p-1 gap-2">
-            <HeaderBack title="Setting" onPress={handleBackPress} />
+  // Call the userLogout hook to get the handleLogout function
+  const handleLogout = userLogout(); 
 
-            <CheckPrivacyStatus />
-            <UserLogout />
-          </View>
+  return (
+    <SafeAreaView className="flex-1">
+      <View className="flex-1 items-center">
+        <View className="w-full sm:w-1/2 flex-1 p-1 gap-2">
+          <HeaderBack title="Setting" onPress={handleBackPress} />
+          <CheckPrivacyStatus />
+          {/* Logout Button */}
+          <ButtonComp title="Logout" onPress={handleLogout} />
         </View>
-      </SafeAreaView>
-    </AuthGuard>
+      </View>
+    </SafeAreaView>
   );
 };
 

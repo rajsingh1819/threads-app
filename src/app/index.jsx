@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ActivityIndicator, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ActivityIndicator,
+  SafeAreaView,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 import imagePath from "../constant/imagePath";
@@ -37,14 +43,21 @@ const Index = () => {
   }, [isSplashLoading]);
 
   // Splash screen display
+
   if (isSplashLoading) {
     return (
       <SafeAreaView className="flex-1 items-center px-5">
-        <View className="flex-1 justify-center items-center">
-          <Image source={{ uri: imagePath?.logo }} className="w-36 h-24" resizeMode="contain" />
+        <View className="flex-1 justify-center items-center gap-2">
+          <Image
+            source={imagePath?.logo}
+            style={{ width: 70, height: 70 }}
+            className="rounded-full"
+            resizeMode="contain"
+          />
+          <Text className="text-xl font-extrabold">Welcome To Threads</Text>
         </View>
         <View className="h-16 items-center mt-5 mb-2">
-          <ActivityIndicator size="large" color="black" />
+          <ActivityIndicator size="large" color="#007BFF" />
           <Text className="text-base text-black">Loading...</Text>
         </View>
       </SafeAreaView>

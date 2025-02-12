@@ -16,7 +16,8 @@ const ActiveMain = ({ users, currentUser, fetchUsers }) => {
         const filteredUsers = users.filter(
           (user) =>
             !user.receivedFollowRequests?.includes(currentUser?._id) &&
-            !user.sentFollowRequests?.includes(currentUser?._id) && user?.followers?.length>=2
+            !user.sentFollowRequests?.includes(currentUser?._id) &&
+            user?.followers?.length >= 2
         );
 
         return (
@@ -105,9 +106,17 @@ const ActiveMain = ({ users, currentUser, fetchUsers }) => {
             key={index} // Added unique key for each button
             onPress={() => switchScreen(screen)}
             activeOpacity={0.7}
-            className="bg-black flex-1 p-3 rounded-lg items-center"
+            className={`  flex-1 p-3 rounded-lg items-center ${
+              activeScreen !== screen ? "bg-black " : "bg-white border"
+            }`}
           >
-            <Text className="text-white">{screen}</Text>
+            <Text
+              className={`${
+                activeScreen !== screen ? "text-white" : "text-black"
+              }`}
+            >
+              {screen}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>

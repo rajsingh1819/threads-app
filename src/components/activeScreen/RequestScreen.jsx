@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, Image } from "react-native";
 import React, { useState } from "react";
 import ButtonComp from "../../constant/ButtonComp";
 import imagePath from "../../constant/imagePath";

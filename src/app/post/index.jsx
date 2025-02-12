@@ -28,13 +28,12 @@ import { checkAuth } from "../../provider/auth";
 import { createPostApi } from "../../provider/userAllApi";
 import { showToast } from "../../constant/showToast";
 import { pickImage } from "../../util/mediaPicker";
-import ZoomImageModal from "../../util/ZoomImageModal";
+import ImageView from "../../util/ImageView";
+import AvatarView from "../../util/AvatarView";
 
 const Post = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-
-  const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [postData, setPostData] = useState({ content: "", imageUri: "" });
 
@@ -106,11 +105,11 @@ const Post = () => {
         >
           <View className="rounded-lg p-2">
             <View className="flex-row mb-4">
-              <Image
-                source={{ uri: user?.avatar?.cloudinary || imagePath?.user }}
-                className="h-10 w-10 rounded-full"
-                resizeMode="contain"
+              <AvatarView
+                avatarUri={user?.avatar?.cloudinary || imagePath?.user}
+                size="md"
               />
+
               <View className="flex-1 gap-3 justify-center">
                 <Text className="ml-3 text-lg font-semibold text-gray-800">
                   {user?.username || "Unknown"}
@@ -118,20 +117,14 @@ const Post = () => {
 
                 {postData.imageUri !== "" && (
                   <View className="relative">
-                    <Pressable onPress={() => setModalVisible(true)}>
-                      <Image
-                        source={{ uri: postData.imageUri }}
-                        className="w-32 h-32 rounded-lg"
-                        resizeMode="cover"
-                      />
-                    </Pressable>
+                    <ImageView imageUri={postData?.imageUri} />
                     <TouchableOpacity
-                      className="absolute -top-2 left-28 bg-white h-8 w-8 rounded-full items-center justify-center shadow-md"
+                      className="absolute -top-5 right-5 bg-gray-500 h-8 w-8 rounded-full items-center justify-center shadow-md"
                       onPress={() =>
                         setPostData((prev) => ({ ...prev, imageUri: "" }))
                       }
                     >
-                      <Text className="text-lg font-bold text-red-500">X</Text>
+                      <Text className="text-lg font-bold">X</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -172,12 +165,6 @@ const Post = () => {
           </View>
         </KeyboardAvoidingView>
       </View>
-
-      <ZoomImageModal
-        visible={modalVisible}
-        imageUri={postData.imageUri}
-        onClose={() => setModalVisible(false)}
-      />
     </SafeAreaView>
   );
 };

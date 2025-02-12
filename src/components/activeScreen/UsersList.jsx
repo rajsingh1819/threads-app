@@ -5,13 +5,10 @@ import { FollowUser, UnfollowUser } from "../../provider/userAllApi";
 import imagePath from "../../constant/imagePath";
 import { Link } from "expo-router";
 
-const UsersList = ({ item, currentUser, fetchUser }) => { // Add fetchUser to props
+const UsersList = ({ item, currentUser, fetchUser }) => { 
   const [isFollowing, setIsFollowing] = useState(false);
   const [isRequested, setIsRequested] = useState(false);
 
-  // useEffect(()=>{
-  //   fetchUser()
-  // },[])
 
   useEffect(() => {
     setIsFollowing(item?.followers?.includes(currentUser?._id));

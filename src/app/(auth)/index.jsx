@@ -24,7 +24,6 @@ const LoginUser = () => {
 
   const goToRegisterPage = () => {
     router.push("/(auth)/register");
-    //   setIsLogin(false);
   };
 
   const loginSubmit = async () => {
@@ -40,9 +39,10 @@ const LoginUser = () => {
 
     try {
       const result = await dispatch(loginUser(formData)).unwrap();
-      console.log("Login Success:", result);
-      // result && userProfile(user?.token);
-      router.push("/(tabs)"); // Navigate to the main screen after login
+      // console.log("Login Success:", result);
+      if (result?.token) {
+        router.push("/(tabs)");
+      }
     } catch (error) {
       console.error("Login Failed:", error);
     }
@@ -57,8 +57,9 @@ const LoginUser = () => {
         <View className=" w-full sm:w-1/2 flex-1 ">
           <View className="items-center mt-1 ">
             <Image
-              source={{ uri: imagePath.logo }}
-              className="h-20 w-20 rounded-full"
+              source={imagePath?.logo}
+              className="rounded-full"
+              style={{ width: 70, height: 70 }}
               resizeMode="contain"
             />
           </View>

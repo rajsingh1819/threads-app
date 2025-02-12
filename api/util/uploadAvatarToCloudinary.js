@@ -66,11 +66,11 @@ const deleteFromCloudinary = async (cloudinaryUrl) => {
   try {
     // Extract the public ID correctly
     const urlParts = cloudinaryUrl.split("/");
-    const fileName = urlParts[urlParts.length - 1].split(".")[0]; // Extract filename without extension
-    const folderPath = urlParts.slice(7, urlParts.length - 1).join("/"); // Extract folder path after domain
+    const fileName = urlParts[urlParts.length - 1].split(".")[0]; 
+    const folderPath = urlParts.slice(7, urlParts.length - 1).join("/"); 
     const publicId = `${folderPath}/${fileName}`;
 
-    // console.log("Attempting to delete from Cloudinary:", publicId);
+   
 
     // Call Cloudinary API
     const result = await cloudinary.uploader.destroy(publicId);

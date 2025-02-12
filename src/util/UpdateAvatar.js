@@ -4,11 +4,10 @@ import { handleAvatar } from "../provider/userAllApi";
 import { pickImage } from "./mediaPicker";
 
 const UpdateAvatar = ({ currentUserId, imageUri, setImageView, onClose }) => {
-  const [imageSelected, setImageSelected] = useState(false); // Track if an image is selected
-  const [newImageUri, setNewImageUri] = useState(imageUri); // Track new image URI
+  const [imageSelected, setImageSelected] = useState(false); 
+  const [newImageUri, setNewImageUri] = useState(imageUri); 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Function to trigger image picker when user wants to change avatar
   const handleChangeAvatar = () => {
     pickImage((uri) => {
       setNewImageUri(uri);

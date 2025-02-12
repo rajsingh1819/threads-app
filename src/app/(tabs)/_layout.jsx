@@ -1,7 +1,7 @@
 import { router, Tabs } from "expo-router";
 import React from "react";
 import { Home, Search, Plus, Heart, User } from "lucide-react-native";
-import AuthGuard from "../../components/AuthGuard";
+import AuthGuard from "../../util/AuthGuard"
 
 
 export default function TabLayout() {
