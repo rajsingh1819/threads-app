@@ -72,6 +72,12 @@ Install dependencies:
    npm install
    npm start
     ```
+
+#### MD_dummy_data
+After all, if you want a dummy data set, go to the `MD_dummy_data folder`, then simply copy and directly insert the data into MongoDB for the users and posts collection.
+
+
+
 ### Preview
 You can view the preview of the app here:
 ![image]()
