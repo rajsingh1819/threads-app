@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const path = require("path");
+
 
 const userRouter = require("./routes/auth-routes");
 const userPostRouter = require("./routes/post-routes");
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose
-  .connect(process.env.DB || "mongodb+srv://rajsingh:DYLq2HlWCEScya89@cluster0.oug8w.mongodb.net/threads", {
+  .connect(process.env.DB , {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

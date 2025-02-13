@@ -4,7 +4,8 @@ import PostSingleList from "../postSingleScreen/SingleList";
 import Comment from "../postSingleScreen/Comment";
 
 const Replies = ({ posts }) => {
-  const [showReplies, setShowReplies] = useState(false);
+  const [showReplies, setShowReplies] = useState({});
+
   if (!posts || posts.length === 0) {
     return (
       <View style={{ padding: 10 }}>
@@ -12,8 +13,12 @@ const Replies = ({ posts }) => {
       </View>
     );
   }
-  const handleReply = () => {
-    setShowReplies(!showReplies);
+
+  const handleReply = (postId) => {
+    setShowReplies((prev) => ({
+      ...prev,
+      [postId]: !prev[postId], // Toggle only the clicked post
+    }));
   };
 
   return (
@@ -26,12 +31,11 @@ const Replies = ({ posts }) => {
             <PostSingleList
               item={item}
               action="post"
-              onMessageIconPress={handleReply}
+              onMessageIconPress={() => handleReply(item._id)}
             />
 
-            {/* Loop through comments */}
-
-            {showReplies &&
+            {/* Loop through comments for the specific post */}
+            {showReplies[item._id] &&
               item?.comments?.length > 0 &&
               item?.comments?.map((comment) => (
                 <View key={comment._id} className="ml-10 mt-2">

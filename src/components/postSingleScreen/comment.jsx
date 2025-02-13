@@ -12,7 +12,7 @@ const Comment = ({ comment, postId, user }) => {
 
   const handleReply = () => {
     setReplyTo(comment);
-    router.push({
+    user  &&  router.push({
       pathname: "/reply",
       params: {
         postId,
