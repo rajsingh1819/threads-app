@@ -31,17 +31,17 @@ Before running the project, set up the required environment variables in a `.env
 ```bash
 DB=""
 
-2️⃣ Set the Server Port
+2️⃣ **Set the Server Port**
  ```bash
 PORT=3000
 
-3️⃣ Email Configuration
+3️⃣ **Email Configuration**
 Go to your email provider and generate a user and password, then add them:
  ```bash
 USER=""
 PASS=""
 
-4️⃣ Cloudinary Configuration
+4️⃣ **Cloudinary Configuration**
 Go to Cloudinary and set up your credentials:
  ```bash
 CLOUDINARY_CLOUD_NAME=""
