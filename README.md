@@ -85,6 +85,7 @@ After all, if you want a dummy data set, go to the `MD_dummy_data folder`, then 
 ![Home](Preview/Home.png)
 ![Reply](Preview/reply.png)
 ![Threads](Preview/threads.png)
+![User](Preview/find%20user.png)
 ![Search](Preview/search.png)
 ![Post](Preview/post.png)
 ![Active](Preview/active.png)
