@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose
-  .connect(process.env.DB , {
+  .connect(process.env.DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

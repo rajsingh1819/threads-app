@@ -108,7 +108,7 @@ const UserComments = () => {
 
               <View className="flex-row gap-1 border border-slate-400 rounded-full p-2">
                 <Image
-                  source={{ uri: imagePath?.user }}
+                  source={{ uri: user?.avatar?.cloudinary || imagePath?.user }}
                   className="h-8 w-8 rounded-full"
                   resizeMode="contain"
                 />
