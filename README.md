@@ -27,21 +27,21 @@
 🛠 **Environment Variables Setup**  
 Before running the project, set up the required environment variables in a `.env` file inside the API folder.
 
-1️⃣ **Set Your MongoDB URL**  
+## Set Your MongoDB URL
 ```bash
-DB=""
+ DB=""
 
-2️⃣ **Set the Server Port**
+### Set the Server Port**
  ```bash
-PORT=3000
+ PORT=3000
 
-3️⃣ **Email Configuration**
+### Email Configuration**
 Go to your email provider and generate a user and password, then add them:
  ```bash
 USER=""
 PASS=""
 
-4️⃣ **Cloudinary Configuration**
+### loudinary Configuration**
 Go to Cloudinary and set up your credentials:
  ```bash
 CLOUDINARY_CLOUD_NAME=""
