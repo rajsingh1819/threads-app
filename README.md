@@ -63,6 +63,7 @@ npm start    # Run the server
 Install dependencies:  
    ```bash
    npm install
+   npm start
    ```
 ### Backend (api) 
 1. Navigate to the `api` folder.  
