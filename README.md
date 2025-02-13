@@ -80,7 +80,24 @@ After all, if you want a dummy data set, go to the `MD_dummy_data folder`, then 
 
 ### Preview
 You can view the preview of the app here:
-![image]()
+![Login](Preview/login.png)
+![Forgot](Preview/forgot.png)
+![Home](Preview/Home.png)
+![Reply](Preview/reply.png)
+![Threads](Preview/threads.png)
+![Search](Preview/search.png)
+![Post](Preview/post.png)
+
+![Active](Preview/active.png)
+![Profile](Preview/profile.png)
+![Edit Profile](Preview/edit%20profile.png)
+![Setting](Preview/setting.png)
+![Change Avatar](Preview/change%20avatar.png)
+
+
+
+
+
 
 
 
