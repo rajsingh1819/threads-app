@@ -1,9 +1,12 @@
-Project Review
-📌 API Configuration Guide
-🛠 Environment Variables Setup
-Before running the project, set up the required environment variables in a .env file inside the API folder.
+# Project Review
 
-1️⃣ Set Your MongoDB URL
+## 📌 API Configuration Guide
+
+### 🛠 Environment Variables Setup
+
+Before running the project, set up the required environment variables in a `.env` file inside the **API folder**.
+
+#### 1️⃣ Set Your MongoDB URL
 
 DB=""
 
