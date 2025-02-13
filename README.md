@@ -27,13 +27,56 @@
 🛠 **Environment Variables Setup**  
 Before running the project, set up the required environment variables in a `.env` file inside the API folder.
 
-### Set Your MongoDB URL
-Add your MongoDB URL in the `.env` file.
-```plaintext
-   DB=""
+---
+
+1️⃣ Set Your MongoDB URL 
+Go to your MongoDB 
+```bash
+DB=""
+```
+2️⃣ Set the Server Port
+ ```bash
+PORT=3000
+```
+3️⃣ Email Configuration
+Go to your email provider and generate a user and password, then add them:
+ ```bash
+USER=""
+PASS=""
+```
+4️⃣ Cloudinary Configuration
+Go to Cloudinary and set up your credentials:
+ ```bash
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
 ```
 
-2️⃣ Set the Server Port
-Set the server port (e.g., 3000) in the .env file.
-```basg
-DB=""
+🚀 Running the API
+Once you've set up the .env file, start the API using:
+ ```bash
+npm install  # Install dependencies
+npm start    # Run the server
+```
+
+### Frontend  
+Install dependencies:  
+   ```bash
+   npm install
+   ```
+### Backend (api) 
+1. Navigate to the `api` folder.  
+2. Install dependencies:  
+   ```bash
+   npm install
+   npm start
+    ```
+Preview
+You can view the preview of the app here:
+![image]()
+
+
+
+
+
+
