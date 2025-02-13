@@ -71,7 +71,7 @@ Install dependencies:
    npm install
    npm start
     ```
-Preview
+### Preview
 You can view the preview of the app here:
 ![image]()
 
