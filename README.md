@@ -27,13 +27,13 @@
 🛠 **Environment Variables Setup**  
 Before running the project, set up the required environment variables in a `.env` file inside the API folder.
 
-### 1️⃣ **Set Your MongoDB URL**  
+### Set Your MongoDB URL
 Add your MongoDB URL in the `.env` file.
-
 ```plaintext
-DB=""
+   DB=""
+```
 
 2️⃣ Set the Server Port
 Set the server port (e.g., 3000) in the .env file.
-```plaintext
+```basg
 DB=""
