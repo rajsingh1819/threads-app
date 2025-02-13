@@ -78,8 +78,9 @@ After all, if you want a dummy data set, go to the `MD_dummy_data folder`, then 
 
 
 
-### Preview
-You can view the preview of the app here:
+##Preview
+### You can view the preview of the app here:
+
 ![Login](Preview/login.png)
 ![Forgot](Preview/forgot.png)
 ![Home](Preview/Home.png)
