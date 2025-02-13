@@ -78,8 +78,7 @@ After all, if you want a dummy data set, go to the `MD_dummy_data folder`, then 
 
 
 
-##Preview
-### You can view the preview of the app here:
+#Preview
 
 ![Login](Preview/login.png)
 ![Forgot](Preview/forgot.png)
@@ -88,7 +87,6 @@ After all, if you want a dummy data set, go to the `MD_dummy_data folder`, then 
 ![Threads](Preview/threads.png)
 ![Search](Preview/search.png)
 ![Post](Preview/post.png)
-
 ![Active](Preview/active.png)
 ![Profile](Preview/profile.png)
 ![Edit Profile](Preview/edit%20profile.png)
